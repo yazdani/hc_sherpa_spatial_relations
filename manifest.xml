@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <description brief="sherpa_spatial_relations">
+
+     sherpa_spatial_relations
+
+  </description>
+  <author>Fereshta Yazdani</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sherpa_spatial_relations</url>
+  <!--<rosdep name="bullet"/>-->
+  <depend package="gazebo_msgs"/>
+  <depend package="actionlib"/>
+  <depend package="roscpp"/>
+  <depend package="pr2_controllers_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="cram_language"/>
+  <depend package="cram_roslisp_common"/>-->
+  <depend package="bullet_reasoning_designators" />
+  <depend package="bullet_reasoning"/>
+  <depend package="cram_designators"/>
+  <!-- <depend package="location_costmap"/>
+       <depend package="roslisp_runtime"/> 
+       <depend package="semantic_map_costmap"/>
+       <depend package="bullet_reasoning"/>-->
+       <depend package="cram_pr2_knowledge"/>
+       <depend package="cram_language"/>
+ 
+       <depend package="object_location_designators"/>  
+       <depend package="pr2_projection_process_modules"/>
+
+</package>
+
+
