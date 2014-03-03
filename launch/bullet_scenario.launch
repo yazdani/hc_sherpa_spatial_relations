@@ -1,8 +1,12 @@
+<?xml version="1.0"?>
 <launch>
-
+<include file="$(find bullet_reasoning_demo)/launch/bullet_reasoning.launch"/>
 <group ns="quad1">
 <param name="robot_description" command="$(find xacro)/xacro.py '$(find hector_quadrotor_urdf)/urdf/quadrotor.urdf.xacro'"/>
 </group>
 
 
+<group ns="genius">
+<param name="robot_description" command="$(find xacro)/xacro.py $(find sherpa_spatial_relations)/models/sherpa_busy_genius.xacro" />
+</group>
 </launch>
