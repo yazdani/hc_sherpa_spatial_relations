@@ -39,7 +39,7 @@
 (defun start-bullet-with-robot ()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOT INTO WORLD")
   (setf *list* nil)
-  (let* ((pr2-urdf (cl-urdf:parse-urdf (roslisp:get-param "genius/robot_description"))))
+  (let* ((genius-urdf (cl-urdf:parse-urdf (roslisp:get-param "genius/robot_description"))))
     (setf *list*
           (car 
            (force-ll
@@ -50,7 +50,7 @@
                (assert (object ?w static-plane floor ((0 0 0) (0 0 0 1))
                                :normal (0 0 1) :constant 0))
                (debug-window ?w)
-               (assert (object ?w urdf pr2 ((0 0 0) (0 0 0 1)) :urdf ,pr2-urdf)) )))))))
+               (assert (object ?w urdf genius ((0 0 0) (0 0 0 1)) :urdf ,genius-urdf)) )))))))
        
       ;         (robot-arms-parking-joint-states ?joint-states)
       ;         (assert (joint-state ?w pr2 ?joint-states))

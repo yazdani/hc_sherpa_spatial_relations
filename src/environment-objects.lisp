@@ -1,16 +1,51 @@
-(defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/models/tree-5.stl" nil)
-			     (tree2 "package://sherpa_spatial_relations/models/tree-2.stl" nil)
-			     (tree3 "package://sherpa_spatial_relations/models/tree-3.stl" nil)
-			     (tree4 "package://sherpa_spatial_relations/models/tree-4.stl" nil)
-			     (quad1 "package://sherpa_spatial_relations/models/quadrotor.stl" nil)
-))
+;;; Copyright (c) 2014, Fereshta Yazdani <yazdani@cs.uni-bremen.de>
+;;; All rights reserved.
+;; 
+;;; Redistribution and use in source and binary forms, with or without
+;;; modification, are permitted provided that the following conditions are met:
+;;; 
+;;;     * Redistributions of source code must retain the above copyright
+;;;       notice, this list of conditions and the following disclaimer.
+;;;     * Redistributions in binary form must reproduce the above copyright
+;;;       notice, this list of conditions and the following disclaimer in the
+;;;       documentation and/or other materials provided with the distribution.
+;;;     * Neither the name of the Institute for Artificial Intelligence/
+;;;       Universitaet Bremen nor the names of its contributors may be used to 
+;;;       endorse or promote products derived from this software without 
+;;;       specific prior written permission.
+;;; 
+;;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+;;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+;;; ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+;;; LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+;;; CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+;;; SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+;;; INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+;;; CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+;;; POSSIBILITY OF SUCH DAMAGE.
 
-(defclass environment-object (object)
+(in-package :sherpa)
+
+(defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/models/tree-5.stl" nil)
+                              (tree2 "package://sherpa_spatial_relations/models/tree-2.stl" nil)
+                             (tree3 "package://sherpa_spatial_relations/models/tree-3.stl" nil)
+                             (tree4 "package://sherpa_spatial_relations/models/tree-4.stl" nil)
+                             (quad1 "package://sherpa_spatial_relations/models/quadrotor.stl" nil)
+                             ))
+
+ (defclass environment-object (object)
+   (format t "hello~")
   ((types :reader environment-object-types :initarg :types)))
+
+;;(defmethod copy-object ((object environment-object) (world bt-reasoning-world))
+;;  (change-class (call-next-method) 'environment-object
+;;                :types (environment-object-types object)))
 
 (defgeneric environment-object-dimensions (object)
   (:method ((object environment-object))
-    (bounding-box-dimensions (aabb object)))
+    (cl-bullet:bounding-box-dimensions (aabb object)))
   (:method ((object-type symbol))
     (or (cutlery-dimensions object-type)
         (let ((mesh-specification (assoc object-type *mesh-files*)))
@@ -29,7 +64,24 @@
                  (physics-utils:calculate-aabb
                   (physics-utils:3d-model-vertices model))))))))))
 
-(defmethod add-object ((world bt-world) (type (eql 'mesh)) name pose
+(defgeneric cutlery-dimensions (type)
+  (:method ((type t))
+    nil)
+  (:method ((type (eql 'knife)))
+    (cl-transforms:make-3d-vector 0.1 0.01 0.005))
+  (:method ((type (eql 'fork)))
+    (cl-transforms:make-3d-vector 0.1 0.015 0.005)))
+
+(defun make-environment-object (world name types &optional bodies (add-to-world t))
+  (make-instance 'environment-object
+    :name name
+    :world world
+    :rigid-bodies bodies
+    :add add-to-world
+    :types types))
+
+
+(defmethod add-object ((world cl-bullet:bt-world) (type (eql 'mesh)) name pose
                        &key mass mesh (color '(0.5 0.5 0.5 1.0)) types (scale 1.0)
                          disable-face-culling)
   (let ((mesh-model (physics-utils:scale-3d-model
@@ -44,11 +96,11 @@
                                    model)))
                        (physics-utils:3d-model mesh))
                      scale)))
-    (make-household-object world name (or types (list mesh))
+    (make-environment-object world name (or types (list mesh))
                            (list
                             (make-instance 'rigid-body
                               :name name :mass mass :pose (ensure-pose pose)
-                              :collision-shape (make-instance 'convex-hull-mesh-shape
+                              :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
                                                  :points (physics-utils:3d-model-vertices mesh-model)
                                                  :faces (physics-utils:3d-model-faces mesh-model)
                                                  :color color

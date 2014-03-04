@@ -13,6 +13,11 @@
   <depend package="gazebo_msgs"/>
   <depend package="actionlib"/>
   <depend package="roscpp"/>
+   <depend package="cl_bullet" />
+  <depend package="cl_bullet_vis" />
+  <depend package="cram_json_prolog" />
+  <depend package="cl_urdf" /> 
+  <depend package="cl_tf" />
   <depend package="pr2_controllers_msgs"/>
   <depend package="sensor_msgs"/>
   <depend package="cram_language"/>

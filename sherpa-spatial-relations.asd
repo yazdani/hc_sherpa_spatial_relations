@@ -49,9 +49,10 @@
  ((:module "src"
 	   :components
 	   ((:file "package")
-      (:file "cost-functions" :depends-on ("package"))
+	    (:file "cost-functions" :depends-on ("package"))
 	    (:file "prolog" :depends-on ("package" "cost-functions"))
 	    (:file "costmap-knowledge" :depends-on("package"))
-      (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge"))
+	    (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge" "environment-objects"))
+	    (:file "environment-objects" :depends-on("package"))	   
 ;;      (:file "designator-integration" :depends-on("package"))
       ))))
