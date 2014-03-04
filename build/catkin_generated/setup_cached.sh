@@ -15,7 +15,5 @@ export PATH="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_r
 export PKG_CONFIG_PATH="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/devel/lib/pkgconfig:$PKG_CONFIG_PATH"
 export PYTHONPATH="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/devel/lib/python2.7/dist-packages:$PYTHONPATH"
 export ROSLISP_PACKAGE_DIRECTORIES="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/devel/share/common-lisp:$ROSLISP_PACKAGE_DIRECTORIES"
-export ROS_MAVEN_DEPLOYMENT_REPOSITORY="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/devel/share/maven"
-export ROS_MAVEN_PATH="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/devel/share/maven:$ROS_MAVEN_PATH"
 export ROS_PACKAGE_PATH="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations:/home/yazdani/work/ros/hydro/catkin_ws/src:/opt/ros/hydro/share:/opt/ros/hydro/stacks"
 export ROS_TEST_RESULTS_DIR="/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/test_results"
