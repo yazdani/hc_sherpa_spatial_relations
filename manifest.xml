@@ -11,7 +11,7 @@
   <url>http://ros.org/wiki/sherpa_spatial_relations</url>
   <!--<rosdep name="bullet"/>-->
   <depend package="gazebo_msgs"/>
-  <depend package="actionlib"/>
+  <!--<depend package="actionlib"/>-->
   <depend package="roscpp"/>
    <depend package="cl_bullet" />
   <depend package="cl_bullet_vis" />
