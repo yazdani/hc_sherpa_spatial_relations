@@ -67,7 +67,7 @@
 	<visual>
 	  <origin xyz="0 0 0" rpy="0 0 0"/>
 	  <geometry>
-            <mesh filename="${filename}" scale="${scale}"/>
+            <mesh filename="${filename}" scale=""/>
 	  </geometry>
         </visual>
 	<collision>

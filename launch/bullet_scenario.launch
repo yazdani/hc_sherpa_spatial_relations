@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
 <launch>
 <include file="$(find bullet_reasoning_demo)/launch/bullet_reasoning.launch"/>
+<!--
 <group ns="quad1">
 <param name="robot_description" command="$(find xacro)/xacro.py '$(find hector_quadrotor_description)/urdf/quadrotor.gazebo.xacro'"/>
 </group>
+-->
 
+<group ns="genius"><!--
+<param name="robot_description" textfile="$(find sherpa_genius_description)/urdf/sherpa_busy_genius.urdf"/>-->
 
-<group ns="genius">
-<param name="robot_description" textfile="$(find sherpa_genius_description)/urdf/sherpa_busy_genius.urdf"/>
-<!--<param name="robot_description" command="$(find sherpa_genius_description)/urdf/sherpa_busy_genius.urdf" />-->
+<param name="robot_description" command="$(find xacro)/xacro.py '$(find sherpa_genius_description)/urdf/sherpa_busy_genius.xacro'" />
 </group>
 
 </launch>

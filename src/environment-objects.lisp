@@ -36,8 +36,7 @@
                              ))
 
  (defclass environment-object (object)
-   (format t "hello~")
-  ((types :reader environment-object-types :initarg :types)))
+   ((types :reader environment-object-types :initarg :types)))
 
 ;;(defmethod copy-object ((object environment-object) (world bt-reasoning-world))
 ;;  (change-class (call-next-method) 'environment-object
