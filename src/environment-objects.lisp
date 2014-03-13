@@ -26,14 +26,13 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(in-package :sherpa)
+(in-package :e-sherpa)
 
-(defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/models/tree-5.stl" nil)
-                              (tree2 "package://sherpa_spatial_relations/models/tree-2.stl" nil)
-                             (tree3 "package://sherpa_spatial_relations/models/tree-3.stl" nil)
-                             (tree4 "package://sherpa_spatial_relations/models/tree-4.stl" nil)
-                             (quad1 "package://sherpa_spatial_relations/models/quadrotor.stl" nil)
-                             ))
+(defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/meshes/tree-5.stl" nil)
+                              (tree2 "package://sherpa_spatial_relations/meshes/tree-2.stl" nil)
+                             (tree3 "package://sherpa_spatial_relations/meshes/tree-3.stl" nil)
+                             (tree4 "package://sherpa_spatial_relations/meshes/tree-4.stl" nil)))
+                          ;;   (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)
 
  (defclass environment-object (object)
    ((types :reader environment-object-types :initarg :types)))
