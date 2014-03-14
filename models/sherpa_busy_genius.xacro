@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 
 <robot name="busy_genius" xmlns:xacro="http://ros.org/wiki/xacro">
-    <property name="F_SCALE" value="0.15"/>
-    <property name="S_SCALE" value="0.18"/>
-    <property name="M_SCALE" value="0.25"/>
-    <property name="T_SCALE" value="1.0"/>
+    
+    
     <xacro:macro name="busy_genius_macro">
         <!-- ground position-->
     <link name="world">
@@ -31,52 +29,52 @@
     </xacro:macro>
     
     
-    <xacro:macro name="create_3dof_link" params="name filename scale">
-      <link name="${name}_x">
-	<inertial>
-	  <mass value="1"/>
-	  <origin xyz="0 0 0" />
-	  <inertia 
-	      ixx="1.0" ixy="0.0" ixz="0.0" 
-	      iyy="1.0" iyz="0.0" 
-	      izz="1.0"/>
-	</inertial>
-      </link>
-      
-      <link name="${name}_y">
-	<inertial>
-	  <mass value="1"/>
-	  <origin xyz="0 0 0" />
-	  <inertia 
-	      ixx="1.0" ixy="0.0" ixz="0.0" 
-	      iyy="1.0" iyz="0.0" 
-	      izz="1.0"/>
-	</inertial>
-      </link>
-      
-      <link name="${name}_z">
-	<inertial>
-	  <mass value="1"/>
-	  <origin xyz="0 0 0" />
-	  <inertia 
-	      ixx="1.0" ixy="0.0" ixz="0.0" 
-	      iyy="1.0" iyz="0.0" 
-	      izz="1.0"/>
-	</inertial>
-	
-	<visual>
-	  <origin xyz="0 0 0" rpy="0 0 0"/>
-	  <geometry>
-            <mesh filename="${filename}" scale="${scale}"/>
-	  </geometry>
+    <xacro:macro name="create_3dof_link" params="name filename">        
+        <link name="${name}_x">
+            <inertial>
+            <mass value="1"/>
+                <origin xyz="0 0 0" />
+            <inertia 
+                ixx="1.0" ixy="0.0" ixz="0.0" 
+                iyy="1.0" iyz="0.0" 
+                izz="1.0"/>
+            </inertial>
+        </link>
+        
+        <link name="${name}_y">
+            <inertial>
+            <mass value="1"/>
+                <origin xyz="0 0 0" />
+            <inertia 
+                ixx="1.0" ixy="0.0" ixz="0.0" 
+                iyy="1.0" iyz="0.0" 
+                izz="1.0"/>
+            </inertial>
+        </link>
+        
+        <link name="${name}_z">
+            <inertial>
+            <mass value="1"/>
+                <origin xyz="0 0 0" />
+            <inertia 
+                ixx="1.0" ixy="0.0" ixz="0.0" 
+                iyy="1.0" iyz="0.0" 
+                izz="1.0"/>
+            </inertial>
+            
+            <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+            <mesh filename="${filename}"/>
+            </geometry>
         </visual>
-	<collision>
-	  <origin xyz="0 0 0" rpy="0 0 0"/>
-	  <geometry>
-            <mesh filename="${filename}" scale="${scale}"/>
-	  </geometry>
+            <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+            <mesh filename="${filename}.stl"/>
+            </geometry>
         </collision>
-      </link>
+        </link>
     </xacro:macro>
     
        
@@ -138,21 +136,21 @@
     </xacro:macro>
 
     <xacro:macro name="create_spine">
-      <xacro:create_3dof_link name="pelvis" filename="package://sherpa_genius_description/meshes/Hips.dae" scale="${F_SCALE} ${F_SCALE} ${F_SCALE}"/> 
-        <xacro:create_3dof_link name="l5" filename="package://sherpa_genius_description/meshes/Body1.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-        <xacro:create_3dof_link name="l3" filename="package://sherpa_genius_description/meshes/Body2.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-        <xacro:create_3dof_link name="t12" filename="package://sherpa_genius_description/meshes/Body3.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-        <xacro:create_3dof_link name="t8" filename="package://sherpa_genius_description/meshes/Body4.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-        <xacro:create_3dof_link name="neck" filename="package://sherpa_genius_description/meshes/Neck.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-        <xacro:create_3dof_link name="head" filename="package://sherpa_genius_description/meshes/Head.dae" scale="${M_SCALE} ${M_SCALE} ${M_SCALE}"/>
-
-      <xacro:create_3dof_joint name="pelvis" parent_name="world">
+        <xacro:create_3dof_link name="pelvis" filename="package://sherpa_genius_description/meshes/Hips.dae"/>
+        <xacro:create_3dof_link name="l5" filename="package://sherpa_genius_description/meshes/Body1.dae"/>
+        <xacro:create_3dof_link name="l3" filename="package://sherpa_genius_description/meshes/Body2.dae"/>
+        <xacro:create_3dof_link name="t12" filename="package://sherpa_genius_description/meshes/Body3.dae"/>
+        <xacro:create_3dof_link name="t8" filename="package://sherpa_genius_description/meshes/Body4.dae"/>
+        <xacro:create_3dof_link name="neck" filename="package://sherpa_genius_description/meshes/Neck.dae"/>
+        <xacro:create_3dof_link name="head" filename="package://sherpa_genius_description/meshes/Head.dae"/>
+        
+        <xacro:create_3dof_joint name="pelvis" parent_name="world">
             <origin xyz="0 0 0.91" rpy="1.5707 0 0" />
         </xacro:create_3dof_joint>  
             
-        <xacro:create_3dof_joint name="l5" parent_name="pelvis_y"> 
-            <origin xyz="0 0.1 0 " rpy="0 0 0" /> 
-        </xacro:create_3dof_joint> 
+        <xacro:create_3dof_joint name="l5" parent_name="pelvis_y">
+            <origin xyz="0 0.1 0 " rpy="0 0 0" />
+        </xacro:create_3dof_joint>  
         <xacro:create_3dof_joint name="l3" parent_name="l5_y">
             <origin xyz="0 0.107 0" rpy="0 0 0" />
         </xacro:create_3dof_joint>  
@@ -184,13 +182,13 @@
      <xacro:macro name="create_arm" params="suffix file_suffix *origin">
          <!-- right arm -->
          
-        <xacro:create_3dof_link name="${suffix}_shoulder" filename="package://sherpa_genius_description/meshes/Shoulder${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
+        <xacro:create_3dof_link name="${suffix}_shoulder" filename="package://sherpa_genius_description/meshes/Shoulder${file_suffix}.dae"/>
     
-        <xacro:create_3dof_link name="${suffix}_upper_arm" filename="package://sherpa_genius_description/meshes/UpperArm${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
+        <xacro:create_3dof_link name="${suffix}_upper_arm" filename="package://sherpa_genius_description/meshes/UpperArm${file_suffix}.dae"/>
     
-        <xacro:create_3dof_link name="${suffix}_lower_arm" filename="package://sherpa_genius_description/meshes/LowerArm${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
+        <xacro:create_3dof_link name="${suffix}_lower_arm" filename="package://sherpa_genius_description/meshes/LowerArm${file_suffix}.dae"/>
     
-        <xacro:create_3dof_link name="${suffix}_hand" filename="package://sherpa_genius_description/meshes/Hand${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
+        <xacro:create_3dof_link name="${suffix}_hand" filename="package://sherpa_genius_description/meshes/Hand${file_suffix}.dae"/>
     
             
             
@@ -222,18 +220,11 @@
     <xacro:macro name="create_leg" params="suffix file_suffix *origin">
          
          
-<!--        <xacro:create_3dof_link name="${suffix}_upper_leg" filename="package://sherpa_genius_description/meshes/UpperLeg${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-        <xacro:create_3dof_link name="${suffix}_lower_leg" filename="package://sherpa_genius_description/meshes/LowerLeg${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>-->
-
-<xacro:create_3dof_link name="${suffix}_upper_leg" filename="package://sherpa_genius_description/meshes/UpperLeg${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-<xacro:create_3dof_link name="${suffix}_lower_leg" filename="package://sherpa_genius_description/meshes/LowerLeg${file_suffix}.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-<xacro:create_3dof_link name="left_foot" filename="package://sherpa_genius_description/meshes/FootLeft.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-<xacro:create_3dof_link name="left_toe" filename="package://sherpa_genius_description/meshes/ToeLeft.dae" scale="${T_SCALE} ${T_SCALE} ${T_SCALE}"/>
-<xacro:create_3dof_link name="right_foot" filename="package://sherpa_genius_description/meshes/FootRight.dae" scale="${F_SCALE} ${F_SCALE} ${F_SCALE}"/>
-<xacro:create_3dof_link name="right_toe" filename="package://sherpa_genius_description/meshes/ToeRight.dae" scale="${S_SCALE} ${S_SCALE} ${S_SCALE}"/><!--
- <xacro:create_3dof_link name="${suffix}_foot" filename="package://sherpa_genius_description/meshes/Foot${file_suffix}.dae" scale="${F_SCALE} ${F_SCALE} ${F_SCALE}"/>
-     <xacro:create_3dof_link name="${suffix}_toe" filename="package://sherpa_genius_description/meshes/Toe${file_suffix}.dae" scale="${S_SCALE} ${S_SCALE} ${S_SCALE}"/>-->
-<!--     <xacro:create_3dof_link name="left_toe" filename="package://sherpa_genius_description/meshes/ToeLeft.dae" scale="1 1 1"/>-->
+        <xacro:create_3dof_link name="${suffix}_upper_leg" filename="package://sherpa_genius_description/meshes/UpperLeg${file_suffix}.dae"/>
+        <xacro:create_3dof_link name="${suffix}_lower_leg" filename="package://sherpa_genius_description/meshes/LowerLeg${file_suffix}.dae"/>
+        <xacro:create_3dof_link name="${suffix}_foot" filename="package://sherpa_genius_description/meshes/Foot${file_suffix}.dae"/>
+        <xacro:create_3dof_link name="${suffix}_toe" filename="package://sherpa_genius_description/meshes/Toe${file_suffix}.dae"/>
+    
     
                     
         <xacro:create_3dof_joint name="${suffix}_upper_leg" parent_name="pelvis_y">

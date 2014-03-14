@@ -26,49 +26,45 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(in-package :e-sherpa)
+(in-package :sherpa)
 
 (defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/meshes/tree-5.stl" nil)
-                              (tree2 "package://sherpa_spatial_relations/meshes/tree-2.stl" nil)
+                             (tree2 "package://sherpa_spatial_relations/meshes/tree-2.stl" nil)
                              (tree3 "package://sherpa_spatial_relations/meshes/tree-3.stl" nil)
-                             (tree4 "package://sherpa_spatial_relations/meshes/tree-4.stl" nil)))
+                             (tree4 "package://sherpa_spatial_relations/meshes/tree-4.stl" nil)
+                             (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)))
+
+
                           ;;   (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)
 
  (defclass environment-object (object)
    ((types :reader environment-object-types :initarg :types)))
 
-;;(defmethod copy-object ((object environment-object) (world bt-reasoning-world))
-;;  (change-class (call-next-method) 'environment-object
-;;                :types (environment-object-types object)))
+ (defclass human-specific-object (object)
+   ((types :reader human-specific-object-types :initarg :types)))
 
-(defgeneric environment-object-dimensions (object)
-  (:method ((object environment-object))
-    (cl-bullet:bounding-box-dimensions (aabb object)))
-  (:method ((object-type symbol))
-    (or (cutlery-dimensions object-type)
-        (let ((mesh-specification (assoc object-type *mesh-files*)))
-          (assert
-           mesh-specification ()
-           "Couldn't fine a mesh for object type ~a." object-type)
-          (destructuring-bind (type uri &optional flip-winding-order)
-              mesh-specification
-            (declare (ignore type))
-            (let ((model-filename (physics-utils:parse-uri uri)))
-              (with-file-cache
-                  model model-filename (physics-utils:load-3d-model
-                                        model-filename
-                                        :flip-winding-order flip-winding-order)
-                (values
-                 (physics-utils:calculate-aabb
-                  (physics-utils:3d-model-vertices model))))))))))
+;;(defgeneric environment-object-dimensions (object)
+;;  (:method ((object environment-object))
+;;    (cl-bullet:bounding-box-dimensions (aabb object)))
+;;  (:method ((object-type symbol))
+;;    (or (cutlery-dimensions object-type)
+;;        (let ((mesh-specification (assoc object-type *mesh-files*)))
+;;          (format t "object-type ~a~%" object-type)
+;;          (assert
+;;           mesh-specification ()
+;;           "Couldn't fine a mesh for object type ~a." object-type)
+;;          (destructuring-bind (type uri &optional flip-winding-order)
+;;              mesh-specification
+;;            (declare (ignore type))
+;;            (let ((model-filename (physics-utils:parse-uri uri)))
+;;              (with-file-cache
+;;                  model model-filename (physics-utils:load-3d-model
+;;                                        model-filename
+;;                                        :flip-winding-order flip-winding-order)
+;;                (values
+;;                 (physics-utils:calculate-aabb
+;;                  (physics-utils:3d-model-vertices model))))))))))
 
-(defgeneric cutlery-dimensions (type)
-  (:method ((type t))
-    nil)
-  (:method ((type (eql 'knife)))
-    (cl-transforms:make-3d-vector 0.1 0.01 0.005))
-  (:method ((type (eql 'fork)))
-    (cl-transforms:make-3d-vector 0.1 0.015 0.005)))
 
 (defun make-environment-object (world name types &optional bodies (add-to-world t))
   (make-instance 'environment-object
@@ -78,6 +74,15 @@
     :add add-to-world
     :types types))
 
+(defun make-human-specific-object (world name types &optional bodies (add-to-world t))
+ (make-instance 'human-specific-object
+    :name name
+    :world world
+    :rigid-bodies bodies
+    :add add-to-world
+    :types types)
+ )
+
 
 (defmethod add-object ((world cl-bullet:bt-world) (type (eql 'mesh)) name pose
                        &key mass mesh (color '(0.5 0.5 0.5 1.0)) types (scale 1.0)
@@ -85,7 +90,7 @@
   (let ((mesh-model (physics-utils:scale-3d-model
                      (etypecase mesh
                        (symbol (let ((uri (physics-utils:parse-uri (cadr (assoc mesh *mesh-files*)))))
-  (with-file-cache model uri                                  
+                                 (with-file-cache model uri                                  
                                      (physics-utils:load-3d-model
                                       uri :flip-winding-order (caddr (assoc mesh *mesh-files*)))
                                    model)))
@@ -94,12 +99,23 @@
                                    model)))
                        (physics-utils:3d-model mesh))
                      scale)))
-    (make-environment-object world name (or types (list mesh))
-                           (list
-                            (make-instance 'rigid-body
-                              :name name :mass mass :pose (ensure-pose pose)
-                              :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
-                                                 :points (physics-utils:3d-model-vertices mesh-model)
-                                                 :faces (physics-utils:3d-model-faces mesh-model)
-                                                 :color color
-                                                 :disable-face-culling disable-face-culling))))))
+ ;;ToDO change the hard-cording stuff
+   (cond ((eq name `hat)
+          (make-human-specific-object world name (or types (list mesh))
+                                      (list
+                                       (make-instance 'rigid-body
+                                                      :name name :mass mass :pose (ensure-pose pose)
+                                                      :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
+                                                                                      :points (physics-utils:3d-model-vertices mesh-model)
+                                                                                      :faces (physics-utils:3d-model-faces mesh-model)
+                                                                                      :color color
+                                                                                      :disable-face-culling disable-face-culling)))))
+         (t (make-environment-object world name (or types (list mesh))
+                                     (list
+                                      (make-instance 'rigid-body
+                                                     :name name :mass mass :pose (ensure-pose pose)
+                                                     :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
+                                                                                     :points (physics-utils:3d-model-vertices mesh-model)
+                                                                                     :faces (physics-utils:3d-model-faces mesh-model)
+                                                                                     :color color
+                                                                                     :disable-face-culling disable-face-culling))))))))

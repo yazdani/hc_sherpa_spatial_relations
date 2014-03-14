@@ -28,18 +28,29 @@
 
 (in-package :sherpa)
 
-(defun start-scenario ()
-  (roslisp-utilities:startup-ros :anonymous nil)
-  (start-bullet-with-robot)
-  (spawn-tree)
-  (spawn-robot)
-  (pr2-execute-trajectory)
-  (go-into-this-direction)) 
+;;start the rosnode 
+(defun start-myros ()
+  (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
+  (roslisp-utilities:startup-ros :anonymous nil))
 
-(defun start-bullet-with-robot ()
+;;finish the rosnode
+(defun end-myros ()
+  (roslisp:ros-info (sherpa-spatial-relations) "KILL the ROSNODE")
+  (roslisp-utilities:shutdown-ros))
+
+(defun start-scenario ())
+
+;;
+;;This method "start-bullet-with-robots" starts the bullet world and 
+;;inserts all the robots into the world in a given position
+;;
+(defun start-bullet-with-robots()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOT INTO WORLD")
   (setf *list* nil)
-  (let* ((genius-urdf (cl-urdf:parse-urdf (roslisp:get-param "genius/robot_description"))))
+  (let* ((genius-urdf (cl-urdf:parse-urdf (roslisp:get-param "genius/robot_description")))
+         (quad-urdf (cl-urdf:parse-urdf (roslisp:get-param "quad/robot_description")))
+         (rover-urdf (cl-urdf:parse-urdf (roslisp:get-param "rover/robot_description"))) 
+)
     (setf *list*
           (car 
            (force-ll
@@ -50,102 +61,45 @@
                (assert (object ?w static-plane floor ((0 0 0) (0 0 0 1))
                                :normal (0 0 1) :constant 0))
                (debug-window ?w)
-               (assert (object ?w urdf genius ((0 0 0) (0 0 0 1)) :urdf ,genius-urdf)) )))))))
-       
-      ;         (robot-arms-parking-joint-states ?joint-states)
-      ;         (assert (joint-state ?w pr2 ?joint-states))
-      ;         (assert (joint-state ?w pr2 (("torso_lift_joint" 0.33)))))))))))
-
-
-(defun visible-object-in-the-world ()
-(force-ll (prolog '(and 
-                    (bullet-world ?w)
-                    (robot ?r)
-                    (visible ?w ?r ?o)))))
-
-
+               (assert (object ?w urdf genius ((0 0 0) (0 0 1 1)) :urdf ,genius-urdf))
+               (assert (object ?w urdf quad ((0 1 2) (0 0 0 1)) :urdf ,quad-urdf))
+               (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
+             )))))))
+;;
+;;The method "spawn-tree" spawns the environment objects into the environment
+;;for having a realistic terrain.
+;;
 (defun spawn-tree ()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
   (force-ll (prolog `(and (bullet-world ?w)
-                                   (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
-                                                       :mesh btr::tree1 :mass 0.2 :color (0 0 0)))
-				   (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
-                                                       :mesh btr::tree3 :mass 0.2 :color (0 0 0)))
+                          (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
+                                          :mesh tree1 :mass 0.2 :color (0 0 0)))
+                          (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
+                                          :mesh tree3 :mass 0.2 :color (0 0 0)))
+                          (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
+                                          :mesh tree4 :mass 0.2 :color (0 0 0)))
+                          (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
+                                          :mesh tree3 :mass 0.2 :color (0 0 0)))
+                          (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
+                                          :mesh tree2 :mass 0.2 :color (0 0 0)))
+                          (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
+                                          :mesh tree1 :mass 0.2 :color (0 0 0)))))))
 
-                                   (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
-                                                       :mesh btr::tree4 :mass 0.2 :color (0 0 0)))
-                                   (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
-                                                       :mesh btr::tree3 :mass 0.2 :color (0 0 0)))
-                                   (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
-                                                       :mesh btr::tree2 :mass 0.2 :color (0 0 0)))
-				   (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
-                                                      :mesh btr::tree1 :mass 0.2 :color (0 0 0)))
-))))
-
-
-(defun change-tree ()
-  (prolog `(and (bullet-world ?w)
-		(object-type ?w ?obj btr::household-object)
-		(retract (object ?w tree-4))
-		(assert (object ?w btr:mesh tree-4 ((4 0 0)(0 0 0 1))
-				:mesh btr::tree4 :mass 0.2 :color (1 0 1))))))
-
-
-(defun default-tree ()
-  (prolog `(and (bullet-world ?w)
-		(object-type ?w ?obj btr::household-object)
-		(retract (object ?w tree-4))
-		(assert (object ?w mesh tree-4 ((4 0 0)(0 0 0 1))
-				:mesh btr::tree4 :mass 0.2 :color (0 0 0))))))
-
-(defun spawn-robot ()
-  (force-ll 
-   (prolog `(and (bullet-world ?w)
-		 (assert (object ?w mesh quad-1 ((0 1 2)(0 0 0 1))
-				 :mesh btr::quad1 :mass 0.2 :color (1 0 0)))))))
-
-;;remove all trees considering the object-type
-(defun remove-tree () 
-   (crs::force-ll (crs:prolog `(and (btr:bullet-world ?w)
-                                    (btr:object-type ?w ?obj btr::household-object)
-                                    (btr:retract (btr:object ?w ?obj))))))
-;;execute a certain position with the joints  
-(defun pr2-execute-trajectory ()
-  (crs:prolog
-   `(assert (btr:joint-state ?w ?robot (("r_shoulder_pan_joint" 0.0)
-                                        ("r_shoulder_lift_joint" -0.5) 
-                                        ("r_upper_arm_roll_joint" 0.0)
-                                        ("r_elbow_flex_joint" 0.0)
-                                        ("r_forearm_roll_joint" 0.0)
-                                        ("r_wrist_flex_joint" 0.0)
-                                        ("r_wrist_roll_joint" 1.5))))))
-
-
-                                        ;(defun go-into-direction ()
-                                        ;(change-tree)
-                                        ;(time
-                                        ; (compute-multiple-obj-pose 'tree-4)))
-
-
-;; (defun compute-multiple-obj-pose ()
-;;   (format t "we are inside compute multiple ~%")
-;;   (let ((desig-1 (make-obj-desig-close-to-tree))
-;;         (desig-2 (make-obj-desig-close-to-robot)))
-;;     (crs:prolog `(compute-obj-pose ,desig))
-;;     ))
-
-
-;;start the rosnode 
-(defun start-myros ()
-  (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
-  (roslisp-utilities:startup-ros :anonymous nil))
-
-;; ;;finish the rosnode
-(defun end-myros ()
-  (roslisp:ros-info (sherpa-spatial-relations) "KILL the ROSNODE")
-  (roslisp-utilities:shutdown-ros))
-
-;; ;;build the costmap from position of the robot 
+;;
+;;This method "pointing-into-direction" calls the human-robot and let him point into a direction
+;;where possible SoI (Subject of Interests) are.
+;;ToDO: the position of the human to show into the direction of Subject of Interest
+(defun pointing-into-direction ()
+ (crs:prolog
+ `(assert (btr:joint-state ?w genius(( "right_shoulder_joint_x" 0.06) ;;0.1
+                                     ( "right_shoulder_joint_y" -0.25)  ;;0.0 0.40
+                                     ( "right_shoulder_joint_z" 0.96)  ;;0.6 0.500
+                                     ( "left_upper_arm_joint_x" 0.1)
+                                     ( "left_upper_arm_joint_y" 3.0)
+                                     ( "left_upper_arm_joint_z" -0.5))))))
+;;
+;; build the costmap from position of the robot 
+;;
 (defun go-into-direction ()
   (roslisp:ros-info (sherpa-spatial-relations) "GO INTO POINTED DIRECTION")
  ; (change-tree)
@@ -160,7 +114,29 @@
               (assert (object-pose ?w quad-1 ,pose))))))
 
 
+(defun go-into-default ()
+  (let* ((transform-1 (cl-transforms:make-transform (cl-transforms:make-3d-vector 6 -0.5 0)
+                                                    (cl-transforms:make-quaternion 0 0 0 1)))
+         (desig (make-designator 'desig-props:location `((used-arm ,transform-1))))
+         
+         (pose (reference desig)))
+    (prolog `(and 
+              (bullet-world ?w)
+              (assert (object-pose ?w quad-1 ,pose))))))
 
+
+;;
+;;Here the Subject of Interest will be spawned into the world
+;;
+(defun spawn-object ()
+ (force-ll 
+   (prolog `(and (bullet-world ?w)
+		 (assert (object ?w mesh hat ((7 0 0)(0 0 0 1))
+				 :mesh hat :mass 0.2 :color (1 0 0)))))))
+
+(defun look-for-object ()
+ 
+)
 ;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;
 
 (defun make-obj-desig-close-to-tree ()
@@ -169,6 +145,12 @@
                                                   (cl-transforms:make-quaternion 0 0 0 1))))
          (make-designator 'desig-props:location `((right-of-tree ,transform)))))
 
+(defun create-object-costmap ())
+;; instead of giving the exactly pose, we can look for the object of interest into the environment
+;; and call the pose.
+ ;; (let* ((transform (cl-transforms:make-transform (cl-transforms:make-3d-vector 0 1 2)
+   ;;                                               (cl-transforms:make-quaternion 0 0 0 1)))
+     ;;     (make-designator 'desig-props:location `((right-of ,transform))))))
 
 (defun make-obj-desig-close-to-robot ()
  (format t "create object desig for robot ~%")
@@ -177,12 +159,6 @@
          (make-designator 'desig-props:location `((right-of ,transform)))))
 
 
-;;(defun find-obj-pose (obj-type obj-name)
-;; "this is hard coded and give the object-pose back"
-;;(setf obj-pose (cdr (assoc '?pose (cdar (force-ll (prolog `(and (bullet-world ?w)
-;;					     (object-type ?w ,obj-name ,obj-type)
-;;					     (object-pose ?w ,obj-name ?pose))))))))
-;; obj-pose)
 			      
 (defun go-to-obj (obj-pose)
   "this function returns a designator by getting the obj-pose and generating the costmap from the
@@ -210,6 +186,54 @@
 
 ;;;;;;;;;;;;;Commented;;;;;;;;;;;;;
 
+
+
+;;(defun pointing-into-direction ()
+;; (crs:prolog
+;; `(assert (btr:joint-state ?w genius(( "right_upper_arm_joint_x" 0.1) ;;0.1
+;;                                     ( "right_upper_arm_joint_y" 0.4)  ;;0.0 0.40
+;;                                     ( "right_upper_arm_joint_z" 0.500)  ;;0.6 0.500
+;;                                     )))))
+
+;; (defun compute-multiple-obj-pose ()
+;;   (format t "we are inside compute multiple ~%")
+;;   (let ((desig-1 (make-obj-desig-close-to-tree))
+;;         (desig-2 (make-obj-desig-close-to-robot)))
+;;     (crs:prolog `(compute-obj-pose ,desig))
+;;     ))
+
+
+
+;;execute a certain position with the joints  
+;;(defun pr2-execute-trajectory ()
+;;  (crs:prolog
+;;   `(assert (btr:joint-state ?w ?robot (("r_shoulder_pan_joint" 0.0)
+;;                                        ("r_shoulder_lift_joint" -0.5) 
+;;                                        ("r_upper_arm_roll_joint" 0.0)
+;;                                        ("r_elbow_flex_joint" 0.0)
+;;                                        ("r_forearm_roll_joint" 0.0)
+;;                                        ("r_wrist_flex_joint" 0.0)
+;;                                        ("r_wrist_roll_joint" 1.5))))))
+                                        ;(defun go-into-direction ()
+                                        ;(change-tree)
+                                        ;(time
+                                        ; (compute-multiple-obj-pose 'tree-4)))
+
+
+
+
+;;(defun find-obj-pose (obj-type obj-name)
+;; "this is hard coded and give the object-pose back"
+;;(setf obj-pose (cdr (assoc '?pose (cdar (force-ll (prolog `(and (bullet-world ?w)
+;;					     (object-type ?w ,obj-name ,obj-type)
+;;					     (object-pose ?w ,obj-name ?pose))))))))
+;; obj-pose)
+
+;;(defun spawn-robot ()
+;;  (force-ll 
+;;   (prolog `(and (bullet-world ?w)
+;;		 (assert (object ?w mesh quad-1 ((0 1 2)(0 0 0 1))
+;;				 :mesh btr::quad1 :mass 0.2 :color (1 0 0)))))))
 
 
 ;;(defun pointing-into-direction (object-name)

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+  <robot name="tree1">
+    <material name="LightGrey">
+      <color rgba="0.6 0.6 0.6 1.0"/>
+    </material>
+    <link name="base_link">
+      <visual>
+	<!-- <origin xyz="-4 -3 0"/> -->
+        <geometry>
+	  <mesh filename="package://sherpa_spatial_relations/meshes/hat.stl"/>
+        </geometry>
+	<material name="LightGrey"/>
+      </visual> 
+      <collision>
+	<!--<origin xyz="-4 -3 0"/> -->     
+	<geometry>
+	  <box size="1 1 2"/>
+	</geometry>
+      </collision>
+      <collision>
+	<origin xyz="0 0 2.5"/>      
+	<geometry>    
+	  <mesh filename="package://sherpa_spatial_relations/meshes/hat.stl"/>
+	</geometry>
+      </collision>
+      <inertial>
+	<mass value="1" />
+	<inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+      </inertial>
+    </link>  
+    <gazebo>
+      <static>true</static>
+   </gazebo>
+   
+  </robot>
+  

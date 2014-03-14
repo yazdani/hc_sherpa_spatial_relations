@@ -37,39 +37,53 @@
 (defmethod costmap-generator-name->score ((name gaussian-generator)) 6)
 
 (def-fact-group spatial-relations-costmap (desig-costmap)
-  
-  (<- (desig-costmap ?designator ?costmap)
-    (desig-prop ?designator (left-of ?location))
-    (costmap ?costmap)
-    (costmap-add-function
-     sherpa-spatial-generator
-     (make-spatial-relation-cost-function ?location :Y >)
-     ?costmap))
-  
-  (<- (desig-costmap ?designator ?costmap)
-    (desig-prop ?designator (right-of ?location))
-    (costmap ?costmap)
-    (costmap-add-function 
-     sherpa-spatial-generator
-     (make-spatial-relation-cost-function ?location :Y <)
-     ?costmap)
-    (costmap-add-height-generator
-     (make-constant-height-function 6.0)
-     ?costmap)) 
+   
+;;  (<- (desig-costmap ?designator ?costmap)
+;;      (desig-prop ?designator (right-of ?location))
+;;      (costmap ?costmap)
+;;      (costmap-add-function 
+;;       sherpa-spatial-generator
+;;       (make-spatial-relation-cost-function ?location :Y <)
+;;       ?costmap)
+;;      (costmap-add-height-generator
+;;       (make-constant-height-function 6.0)
+;;       ?costmap)) 
 
-  (<- (desig-costmap ?designator ?costmap)
-    (desig-prop ?designator (behind ?location))
-    (costmap ?costmap)
-    (costmap-add-function
-     sherpa-spatial-generator
-     (make-spatial-relation-cost-function ?location :X >)
-     ?costmap))
-  
-  (<- (desig-costmap ?designator ?costmap)
-    (desig-prop ?designator (in-front ?location))
-    (costmap ?costmap)
-    (costmap-add-function
-     sherpa-spatial-generator
-     (make-spatial-relation-cost-function ?location :X <)
-     ?costmap)))
+  (<- (object-costmap ?designator ?costmap)
+      ;;   (desig-prop ?designator (obj ?object))
+      (bullet-world ?world)
+      (once
+       (cram-environment-representation:object-designator-name
+	?object ?object-name)
+       (and (lisp-type ?object symbol)
+	    (== ?object ?object-name)))
+      (costmap ?costmap)
+        (costmap-add-function
+         sherpa-spatial-generator
+	 (make-object-costmap-generator ?object-instance)
+	 ?costmap))
+       
+	(<- (desig-costmap ?designator ?costmap)
+	    (desig-prop ?designator (position-of ?object))
+	    (object-costmap ?designator ?costmap))
+	     
+)
+;;      (desig-prop ?designator (pointed-at ?direction))
 
+;;      (object-instance-name ?object ?obj-name)
+;;      (btr:bullet-world ?world)
+;;      (btr:object ?world ?obj-name))
+
+     
+
+ 
+ ;     (costmap ?costmap)
+ ;     (costmap-add-function 
+ ;      sherpa-spatial-generator
+ ;      (make-spatial-relation-cost-function ?location :Y <)
+ ;      ?costmap)
+ ;     (costmap-add-height-generator
+ ;      (make-constant-height-function 6.0)
+ ;      ?costmap)))
+
+ 
