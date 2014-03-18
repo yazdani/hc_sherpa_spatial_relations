@@ -27,6 +27,10 @@
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
 (in-package :sherpa)
+(defvar *joint-states* nil
+  "List of current joint states as published by /joint_states.")
+(defvar *joint-states-subscriber* nil
+  "Subscriber to /joint_states.")
 
 ;;start the rosnode 
 (defun start-myros ()
@@ -91,7 +95,7 @@
 ;;ToDO: the position of the human to show into the direction of Subject of Interest
 (defun pointing-into-direction ()
  (crs:prolog
- `(assert (btr:joint-state ?w genius(( "right_shoulder_joint_x" 0.06) ;;0.1
+ `(assert (btr:joint-state ?w genius (( "right_shoulder_joint_x" 0.06) ;;0.1
                                      ( "right_shoulder_joint_y" -0.25)  ;;0.0 0.40
                                      ( "right_shoulder_joint_z" 0.96)  ;;0.6 0.500
                                      ( "left_upper_arm_joint_x" 0.1)
@@ -134,16 +138,40 @@
 		 (assert (object ?w mesh hat ((7 0 0)(0 0 0 1))
 				 :mesh hat :mass 0.2 :color (1 0 0)))))))
 
-(defun look-for-object ()
- 
+(defun get-pose ( name)
+ (prolog `(joint-state ,name "right_shoulder_joint_x"))                            
 )
-;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;
 
+(defun get-object-pose (name)
+  (let* ((lists (force-ll
+              (prolog `(and (bullet-world ?w)
+                            (object-pose ?w ,name ?pose)))))
+         (list (car lists))
+         (a-list (assoc '?pose list)))
+    (cdr a-list)))
+
+(defun arm-length ()
+  )
+
+(defun leg-length ()) 
+ (defun look-for-object ()
+    
+)
+
+(defun robot-name-from-world (name)
+  (let ((list (force-ll 
+               (prolog `(and (bullet-world ?w) 
+                             (object-type ?w ?robot robot-object))))))
+    (loop
+      (when (equal (car list) nil) (return))
+      (when (equal name (cdr (assoc '?robot (car list)))) (return (cdr (assoc '?robot (car list))))) 
+      (setf list (cdr list)))))
+;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;
 (defun make-obj-desig-close-to-tree ()
  (format t "create object desig for tree ~%")
  (let* ((transform (cl-transforms:make-transform (cl-transforms:make-3d-vector 0 0 0)
                                                   (cl-transforms:make-quaternion 0 0 0 1))))
-         (make-designator 'desig-props:location `((right-of-tree ,transform)))))
+         (make-designator 'desig-props:location `((right-of ,transform)))))
 
 (defun create-object-costmap ())
 ;; instead of giving the exactly pose, we can look for the object of interest into the environment
@@ -154,9 +182,9 @@
 
 (defun make-obj-desig-close-to-robot ()
  (format t "create object desig for robot ~%")
- (let* ((transform (cl-transforms:make-transform (cl-transforms:make-3d-vector 0 1 2)
-                                                  (cl-transforms:make-quaternion 0 0 0 1))))
-         (make-designator 'desig-props:location `((right-of ,transform)))))
+ (let* ((pose (get-object-pose 'hat))
+         (desig (make-designator 'desig-props:location `((right-of ,pose)))))
+   (reference desig) ))
 
 
 			      
@@ -343,22 +371,6 @@
 ;define try-solving function
 ;;(defun try-solving (direction)
   
-;; ;; (defun init-joint-states ()
-;; ;; (setf *joint-states-sub*
-;; ;;       (roslisp:subscribe "/joint_states"
-;; ;;                          "sensor_msgs/JointState"
-;; ;;                          #'joint-states-cb)))
-;; (defun joint-states-cb (msg)
-;;   (roslisp:with-fields (name position velocity effort) msg
-;;     (setf
-;;      *joint-list*
-;;      (loop for i from 0 below (length name)
-;;            for n = (elt name i)
-;;            for p = (elt position i)
-;;            for v = (elt velocity i)
-;;            for e = (elt effort i)
-;;            collect (cons n (list p v e))))))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;START OF DESIG;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -477,6 +489,31 @@
 ;;  (start-myros)
 ;;  (execute-right-arm-trajectory (position-to-trajectory)))
 
-
+(defun init-joint ()
+ (setf *joint-states-subscriber*
+        (roslisp:subscribe "trajectory_msgs/JointTrajectory"
+                          "trajectory_msgs/JointTrajectoryPoint"
+                           #'joint-states-cb)))
  
 
+(defun joint-states-cb (msg)
+  (roslisp:with-fields (name position) msg
+    (setf
+     *joint-states*
+     (loop for i from 0 below (length name)
+           for n = (elt name i)
+           for p = (elt position i)
+           collect (cons n p)))))
+
+;; (defun joint-states ()
+;;   *joint-states*
+;;   (format t "*joint-states* ~a~%" *joint-states*)))
+
+(defun get-joint-value (name)
+  (let* ((joint-states (joint-states))
+         (joint-state
+           (nth (position name joint-states
+                          :test (lambda (name state)
+                                  (equal name (car state))))
+                joint-states)))
+    (cdr joint-state)))
