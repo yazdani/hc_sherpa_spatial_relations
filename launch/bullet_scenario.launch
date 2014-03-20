@@ -1,58 +1,19 @@
 <?xml version="1.0"?>
 <launch>
+
 <include file="$(find bullet_reasoning_demo)/launch/bullet_reasoning.launch"/>
+<include file="$(find gazebo_ros)/launch/empty_world.launch"/>
 
 <group ns="quad">
-<param name="robot_description" textfile="$(find sherpa_spatial_relations)/urdf/quadrotor.urdf"/>
-<!--<param name="robot_description" command="$(find xacro)/xacro.py '$(find hector_quadrotor_description)/urdf/quadrotor.gazebo.xacro'"/>-->
+<include file="$(find sherpa_spatial_relations)/launch/flying_robot.launch"/>
 </group>
 
 <group ns="rover">
-<param name="robot_description" textfile="$(find sherpa_spatial_relations)/urdf/sherpa_rover.urdf"/>
-<!--
-<param name="robot_description" command="$(find xacro)/xacro.py '$(find sherpa_genius_description)/urdf/sherpa_busy_genius.xacro'" />-->
+<include file="$(find sherpa_spatial_relations)/launch/ground_rover.launch"/>
 </group>
 
 <group ns="genius">
-<param name="robot_description" textfile="$(find sherpa_spatial_relations)/urdf/sherpa_busy_genius.urdf"/>
-
-<rosparam command="load" file="$(find sherpa_spatial_relations)/config/busy_genius_controller.yaml">
-   
-  <node  name="busy_genius_controllers" pkg ="controller_manager" type="controller_manager" output="screen" args="
-        joint_state_controller
-        pelvis_joint_controller 
-        l5_joint_controller 
-        l3_joint_controller 
-        t12_joint_controller 
-        t8_joint_controller 
-        neck_joint_controller 
-        head_joint_controller 
-        
-        right_shoulder_joint_controller 
-        right_upper_arm_joint_controller 
-        right_lower_arm_joint_controller 
-        right_hand_joint_controller 
-        
-        right_upper_leg_joint_controller 
-        right_lower_leg_joint_controller 
-        right_foot_joint_controller 
-        right_toe_joint_controller 
-        
-        left_shoulder_joint_controller 
-        left_upper_arm_joint_controller 
-        left_lower_arm_joint_controller 
-        left_hand_joint_controller 
-        
-        left_upper_leg_joint_controller 
-        left_lower_leg_joint_controller 
-        left_foot_joint_controller 
-        left_toe_joint_controller 
-            "/>
-</rosparam>
+<include file="$(find sherpa_spatial_relations)/launch/busy_genius.launch"/>
 </group>
-<!--
-<param n
-ame="robot_description" command="$(find xacro)/xacro.py '$(find sherpa_genius_description)/urdf/sherpa_busy_genius.xacro'" />-->
-
 
 </launch>
