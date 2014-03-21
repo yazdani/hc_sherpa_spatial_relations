@@ -44,6 +44,7 @@
                projection-process-modules
  ;;              simple-knowledge
                bullet-reasoning-designators
+	       ;; household-objects-database-msgs_srv
                actionlib)
  :components 
  ((:module "src"
