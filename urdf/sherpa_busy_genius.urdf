@@ -1342,74 +1342,8 @@
       </geometry>
     </collision>
   </link>
-  <link name="left_foot_x">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="left_foot_y">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="left_foot_z">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/FootLeft.dae" />
-      </geometry>
-<material name="Black"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/FootLeft.dae.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <link name="left_toe_x">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="left_toe_y">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="left_toe_z">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/ToeLeft.dae" />
-      </geometry>
- <material name="Black"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/ToeLeft.dae.stl" />
-      </geometry>
-    </collision>
-  </link>
+ 
+  
   <link name="right_foot_x">
     <inertial>
       <mass value="1"/>
@@ -1795,85 +1729,19 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://sherpa_genius_description/meshes/ToeLeft.dae"/>
+        <mesh filename="package://sherpa_spatial_relations/meshes/ToeLeft.dae"/>
       </geometry>
  <material name="Black"/>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://sherpa_genius_description/meshes/ToeLeft.dae.stl"/>
+        <mesh filename="package://sherpa_spatial_relations/meshes/ToeLeft.dae.stl"/>
       </geometry>
     </collision>
   </link>
-  <link name="right_foot_x">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="right_foot_y">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="right_foot_z">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/FootRight.dae"/>
-      </geometry>
-     <material name="Black"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/FootRight.dae.stl"/>
-      </geometry>
-    </collision>
-  </link>
-  <link name="right_toe_x">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="right_toe_y">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-  </link>
-  <link name="right_toe_z">
-    <inertial>
-      <mass value="1"/>
-      <origin xyz="0 0 0"/>
-      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/ToeRight.dae"/>
-      </geometry>
- <material name="Black"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="package://sherpa_spatial_relations/meshes/ToeRight.dae.stl"/>
-      </geometry>
-    </collision>
-  </link>
+  
+ 
   <joint name="left_upper_leg_joint_x" type="revolute">
     <parent link="pelvis_y"/>
     <child link="left_upper_leg_x"/>
@@ -2071,7 +1939,7 @@
       <!--FIXME I will need my own ROSCONTROL driver here -->
       <robotSimType>sherpa_rover_control/SherpaRoverHWSim</robotSimType>
       <!--robotSimType>sherpa_human_control/SherpaHumanHWSim</robotSimType-->
-      <robotNamespace>/</robotNamespace>
+      <robotNamespace>/genius</robotNamespace>
     </plugin>
   </gazebo>
 </robot>
