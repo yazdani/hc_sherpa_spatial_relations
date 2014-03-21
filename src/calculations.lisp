@@ -28,13 +28,14 @@
 
 (in-package :sherpa)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GAZEBO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun square (x)
   (* x x))
 
 ;;
 ;;functions for calculating the links in the world
 ;;
-(defun right-shoulder-to-right-upper-arm-length ()
+(defun right-shoulder-to-right-upper-arm-length-gazebo ()
   (let* ((lower_arm_x (get-joint-value "right_upper_arm_joint_x"))
          (lower_arm_y (get-joint-value "right_upper_arm_joint_y"))
          (lower_arm_z (get-joint-value "right_upper_arm_joint_z"))
@@ -50,7 +51,7 @@
          (square-value (+ (+ x-square y-square) z-square)))
     (sqrt square-value)))
 
-(defun right-upper-arm-to-right-lower-arm-length ()
+(defun right-upper-arm-to-right-lower-arm-length-gazebo ()
   (let* ((lower_arm_x (get-joint-value "right_upper_arm_joint_x"))
          (lower_arm_y (get-joint-value "right_upper_arm_joint_y"))
          (lower_arm_z (get-joint-value "right_upper_arm_joint_z"))
@@ -66,7 +67,7 @@
          (square-value (+ (+ x-square y-square) z-square)))
     (sqrt square-value)))
 
-(defun right-shoulder-to-right-lower-arm-length ()
+(defun right-shoulder-to-right-lower-arm-length-gazebo ()
   (let* ((lower_arm_x (get-joint-value "right_lower_arm_joint_x"))
          (lower_arm_y (get-joint-value "right_lower_arm_joint_y"))
          (lower_arm_z (get-joint-value "right_lower_arm_joint_z"))
@@ -83,33 +84,32 @@
     (sqrt square-value)
     ))
 
+(defun right-upper-arm-to-right-hand-length-gazebo ()
+ (let* ((upper_arm_x (get-joint-value "right_upper_arm_joint_x"))
+         (upper_arm_y (get-joint-value "right_upper_arm_joint_y"))
+         (upper_arm_z (get-joint-value "right_upper_arm_joint_z"))
+         (r_hand_x (get-joint-value "right_hand_joint_x"))
+         (r_hand_y (get-joint-value "right_hand_joint_y"))
+         (r_hand_z (get-joint-value "right_hand_joint_z"))
+         (x-value  (- upper_arm_x r_hand_x))
+         (y-value  (- upper_arm_y r_hand_y))
+         (z-value  (- upper_arm_z r_hand_z))
+         (x-square (square x-value))
+         (y-square (square y-value))
+         (z-square (square z-value))
+         (square-value (+ (+ x-square y-square) z-square)))
+    (sqrt square-value)
+    ))
 ;;
 ;;function for extension the length of the right arm in the world
 ;;
-(defun arm-linear-extension ()
+(defun arm-extension-gazebo ()
   (+ 2 (right-upper-arm-to-right-lower-arm-length)))
-
-(defun ik-calculate ())
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;BULLET;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun arm-length ()
+(defun right-shoulder-to-right-upper-arm-length-bullet ()
   (let* ((x-shoulder (var-value '?state 
              (lazy-car 
               (prolog `(and (bullet-world ?w)
@@ -150,7 +150,7 @@
                        
     (sqrt square-value)))
 
-(defun body-length ()
+(defun body-upper-to-body-lower-bullet  ()
   (let* ((x-shoulder (var-value '?state 
              (lazy-car 
               (prolog `(and (bullet-world ?w)
@@ -191,3 +191,6 @@
                        
     (sqrt square-value)))
 
+
+(defun arm-extension-bullet ()
+  (+ 2 (arm-length)))

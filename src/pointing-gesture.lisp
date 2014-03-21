@@ -33,6 +33,26 @@
 (defvar *joint-states-subscriber* nil
   "Subscriber to /joint_states.")
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;BULLET;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun pointing-into-bullet ()
+ (crs:prolog
+ `(assert (btr:joint-state ?w genius (( "right_shoulder_joint_x" 0.06) ;;0.1
+                                     ( "right_shoulder_joint_y" -0.25)  ;;0.0 0.40
+                                     ( "right_shoulder_joint_z" 0.96)  ;;0.6 0.500
+                                     ( "left_upper_arm_joint_x" 0.1)
+                                     ( "left_upper_arm_joint_y" 3.0)
+                                     ( "left_upper_arm_joint_z" -0.5))))))
+
+(defun get-joint-value-bullet (joint-name)
+  (cdr 
+   (assoc `?value
+          (lazy-car
+           (prolog 
+            `(joint-state ?w genius ,joint-name ?value))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;GAZEBO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun init-joints ()
   (setf *joint-states-subscriber*
         (roslisp:subscribe "/genius/joint_states"
@@ -78,14 +98,12 @@
 
     
 
-(defun pointing-into-gazebo ()
-  (execute-right-arm-trajectory (default-position-to-trajectory))
-  (start-myros))
+
 
 (defun execute-right-arm-trajectory (trajec)
   (roslisp:ros-info (sherpa-spatial-relations) "Execute-right")
   (let* ((act-cli (actionlib:make-action-client
-                   "/genius/right_shoulder_joint_controller/follow_joint_trajectory"
+                   "genius/right_shoulder_joint_controller/follow_joint_trajectory"
                    "control_msgs/FollowJointTrajectoryAction"))
          (act-goal (actionlib:make-action-goal
                       act-cli
@@ -101,6 +119,9 @@
 )
     (roslisp:ros-info (sherpa-spatial-relations) "Finished"))
 
+(defun pointing-into-gazebo ()
+  (execute-right-arm-trajectory (default-position-to-trajectory))
+  (start-myros))
 
 (defun seq-member (item sequence)
   (some (lambda (s)
@@ -168,3 +189,35 @@
                                                  collecting p))
                           time_from_start time_from_start)))
                      points)))))
+
+
+
+
+;; (defun init-joint ()
+;;  (setf *joint-states-subscriber*
+;;         (roslisp:subscribe "trajectory_msgs/JointTrajectory"
+;;                           "trajectory_msgs/JointTrajectoryPoint"
+;;                            #'joint-states-cb)))
+ 
+
+;; (defun joint-states-cb (msg)
+;;   (roslisp:with-fields (name position) msg
+;;     (setf
+;;      *joint-states*
+;;      (loop for i from 0 below (length name)
+;;            for n = (elt name i)
+;;            for p = (elt position i)
+;;            collect (cons n p)))))
+
+;; ;; (defun joint-states ()
+;; ;;   *joint-states*
+;; ;;   (format t "*joint-states* ~a~%" *joint-states*)))
+
+;; (defun get-joint-value (name)
+;;   (let* ((joint-states (joint-states))
+;;          (joint-state
+;;            (nth (position name joint-states
+;;                           :test (lambda (name state)
+;;                                   (equal name (car state))))
+;;                 joint-states)))
+;;     (cdr joint-state)))

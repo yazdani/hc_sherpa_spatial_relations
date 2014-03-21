@@ -30,7 +30,8 @@
 
 (defun make-spatial-relation-cost-function (location axis pred)
   (roslisp:ros-info (sherpa-spatial-relations) "calculate the costmap")
-  (let ((world->location-transformation (cl-transforms:transform-inv location)))
+  (let* ((location1 (cl-transforms::pose->transform location))
+         (world->location-transformation (cl-transforms:transform-inv location1)))
     (lambda (x y)
       (let* ((point (cl-transforms:transform-point world->location-transformation
                                                    (cl-transforms:make-3d-vector x y 0)))
@@ -38,14 +39,15 @@
                       (:x (cl-transforms:x point))
                       (:y (cl-transforms:y point))))
              (mode (sqrt (+  (* (cl-transforms:x point) (cl-transforms:x point))
-                            (* (cl-transforms:y point) (cl-transforms:y point))))))
+                             (* (cl-transforms:y point) (cl-transforms:y point))))))
         (if (funcall pred coord 0.0d0)
-	    (abs (/ coord mode))
+            (abs (/ coord mode))
             0.0d0)))))
 
 (defun make-cost-function-for-gesture (location axis pred)
   (roslisp:ros-info (sherpa-spatial-relations) "calculate the costmap")
-  (let ((world->location-transformation (cl-transforms:transform-inv location)))
+  (let* ((location1 (cl-transforms::pose->transform location))
+        (world->location-transformation (cl-transforms:transform-inv location)))
     (lambda (x y)
       (let* ((point (cl-transforms:transform-point world->location-transformation
                                                    (cl-transforms:make-3d-vector x y 0)))
@@ -55,7 +57,7 @@
              (mode (sqrt (+  (* (cl-transforms:x point) (cl-transforms:x point))
                             (* (cl-transforms:y point) (cl-transforms:y point))))))
         (if (funcall pred coord 0.0d0)
-	    (abs (/ coord mode))
+	     (abs (/ coord mode))
             0.0d0)))))
 
 (defun make-constant-height-function (height)
@@ -63,20 +65,4 @@
     (declare (ignore x y))
     (list height)))
 
-(defun make-object-costmap-generator (object)
-   (let* ((bounding-box (aabb object))
-         (dimensions-x/2 (/ (cl-transforms:x (bt:bounding-box-dimensions bounding-box))
-                            2))
-         (dimensions-y/2 (/ (cl-transforms:y (bt:bounding-box-dimensions bounding-box))
-                            2)))
-    (lambda (x y)
-      (if (and
-           (< x (+ (cl-transforms:x (cl-bullet:bounding-box-center bounding-box))
-                   dimensions-x/2))
-           (> x (- (cl-transforms:x (cl-bullet:bounding-box-center bounding-box))
-                   dimensions-x/2))
-           (< y (+ (cl-transforms:y (cl-bullet:bounding-box-center bounding-box))
-                   dimensions-y/2))
-           (> y (- (cl-transforms:y (cl-bullet:bounding-box-center bounding-box))
-                   dimensions-y/2)))
-          1.0 0.0))))
+

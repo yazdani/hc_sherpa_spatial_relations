@@ -44,7 +44,9 @@
                projection-process-modules
  ;;              simple-knowledge
                bullet-reasoning-designators
-	       ;; household-objects-database-msgs_srv
+               control_msgs-msg
+	       household_objects_database_msgs-msg
+	       ;; household_objects_database_msgs-srv
                actionlib)
  :components 
  ((:module "src"
@@ -53,8 +55,10 @@
 	    (:file "cost-functions" :depends-on ("package"))
 	    (:file "prolog" :depends-on ("package" "cost-functions"))
 	    (:file "costmap-knowledge" :depends-on("package"))
-	    (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge" "environment-objects"))
-	    (:file "environment-objects" :depends-on("package")) ))))
+	    (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge" "environment-objects" "pointing-gesture" "calculations"))
+	    (:file "environment-objects" :depends-on("package")) 
+	     (:file "pointing-gesture" :depends-on("package"))
+	   (:file "calculations" :depends-on("package"))  ))))
 ;;	    (:file "human-specific-objects" :depends-on("package"))
 ;;      (:file "designator-integration" :depends-on("package"))
 ;,      ))))

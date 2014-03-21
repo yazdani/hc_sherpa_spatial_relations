@@ -37,53 +37,62 @@
 (defmethod costmap-generator-name->score ((name gaussian-generator)) 6)
 
 (def-fact-group spatial-relations-costmap (desig-costmap)
-   
-;;  (<- (desig-costmap ?designator ?costmap)
-;;      (desig-prop ?designator (right-of ?location))
-;;      (costmap ?costmap)
-;;      (costmap-add-function 
-;;       sherpa-spatial-generator
-;;       (make-spatial-relation-cost-function ?location :Y <)
-;;       ?costmap)
-;;      (costmap-add-height-generator
-;;       (make-constant-height-function 6.0)
-;;       ?costmap)) 
+  
+  (<- (desig-costmap ?designator ?costmap)
+    (desig-prop ?designator (go-to ?location))
+    (costmap ?costmap)
+    (format "hallo6 ?location: ~a~%" ?location)
+    ;; (costmap ?costmap)
+    (costmap-add-function 
+     sherpa-spatial-generator
+     (make-spatial-relation-cost-function ?location :X >)
+     ?costmap)
+   ;;  (format "hallo6 ?location: ~a~%" ?location)
+    (instance-of range-generator ?range-generator-id-1)
+    (costmap-add-function
+     ?range-generator-id-1
+   (make-range-cost-function ?location 2.0 )
+     ?costmap)
+    
+    (costmap-add-height-generator
+     (make-constant-height-function 3.0)
+     ?costmap)
+))
+;;     (format "hallo15~%")
+;; ))
 
-  (<- (object-costmap ?designator ?costmap)
-      ;;   (desig-prop ?designator (obj ?object))
-      (bullet-world ?world)
-      (once
-       (cram-environment-representation:object-designator-name
-	?object ?object-name)
-       (and (lisp-type ?object symbol)
-	    (== ?object ?object-name)))
-      (costmap ?costmap)
-        (costmap-add-function
-         sherpa-spatial-generator
-	 (make-object-costmap-generator ?object-instance)
-	 ?costmap))
-       
-	(<- (desig-costmap ?designator ?costmap)
-	    (desig-prop ?designator (position-of ?object))
-	    (object-costmap ?designator ?costmap))
-	     
-)
-;;      (desig-prop ?designator (pointed-at ?direction))
-
-;;      (object-instance-name ?object ?obj-name)
-;;      (btr:bullet-world ?world)
-;;      (btr:object ?world ?obj-name))
-
-     
-
- 
- ;     (costmap ?costmap)
- ;     (costmap-add-function 
- ;      sherpa-spatial-generator
- ;      (make-spatial-relation-cost-function ?location :Y <)
- ;      ?costmap)
- ;     (costmap-add-height-generator
- ;      (make-constant-height-function 6.0)
- ;      ?costmap)))
+    ;; (bullet-world ?world)
+    ;; (once
+    ;;  (cram-environment-representation:object-designator-name
+    ;;   ?object ?object-name)
+    ;;  (and (lisp-type ?object symbol)
+    ;;       (== ?object ?object-name)))
+    ;; (costmap ?costmap)
+    ;; (costmap-add-function
+    ;;  sherpa-spatial-generator
+    ;;  (make-object-costmap-generator ?object-instance)
+    ;;  ?costmap))
+;; (<- (desig-costmap ?designator ?costmap)
+;;   (desig-prop ?designator (right-of ?location))
+;;   (costmap ?costmap)
+;;   (costmap-add-function 
+;;    sherpa-spatial-generator
+;;    (make-spatial-relation-cost-function ?location :Y <)
+;;    ?costmap)
+;;   (costmap-add-height-generator
+;;    (make-constant-height-function 6.0)
+;;    ?costmap)) 
+;; (desig-prop ?designator (pointed-at ?direction))
+;; (object-instance-name ?object ?obj-name)
+;; (btr:bullet-world ?world)
+;; (btr:object ?world ?obj-name))
+;; (costmap ?costmap)
+;; (costmap-add-function 
+;;  sherpa-spatial-generator
+;;  (make-spatial-relation-cost-function ?location :Y <)
+;;  ?costmap)
+;; (costmap-add-height-generator
+;;  (make-constant-height-function 6.0)
+;;  ?costmap)))
 
  

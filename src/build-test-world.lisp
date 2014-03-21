@@ -32,24 +32,32 @@
 (defvar *joint-states-subscriber* nil
   "Subscriber to /joint_states.")
 
-;;start the rosnode 
+;; (defun start-scenario ()
+;;  (start-bullet-with-robots)
+;;  (spawn-robot)
+;;  (spawn-tree)
+;;  (pointing-direction)
+;;  s
+;; s
+;; s
+
 (defun start-myros ()
   (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
   (roslisp-utilities:startup-ros :anonymous nil))
 
-;;finish the rosnode
 (defun end-myros ()
   (roslisp:ros-info (sherpa-spatial-relations) "KILL the ROSNODE")
   (roslisp-utilities:shutdown-ros))
 
-(defun start-scenario ())
+;; HERE WE ARE AT THE BEGINNING OF OUT PROGRAMM AND WOULD LIKE TO
+;; START THE REASONING. BUT BEFORE STARTING WE HAVE TO BUILD OUR
+;; SYSTEM, THAT MEANS WE HAVE TO BUILD THE BULLET WORLD WITH ALL
+;; THE IMPORTANT OBJECTS INTO THE WORLD. THE FOLLOWING METHODS
+;; ARE SHOWING US, HOW WE CAN START THE BULLET WORLD AND SPAWN
+;; ROBOTS AND ENVIRONMENT SPECIFIC OBJECTS INTO THIS WOLD.
 
-;;
-;;This method "start-bullet-with-robots" starts the bullet world and 
-;;inserts all the robots into the world in a given position
-;;
 (defun start-bullet-with-robots()
-  (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOT INTO WORLD")
+  (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOTS INTO WORLD")
   (setf *list* nil)
   (let* ((genius-urdf (cl-urdf:parse-urdf (roslisp:get-param "genius/robot_description")))
          (quad-urdf (cl-urdf:parse-urdf (roslisp:get-param "quad/robot_description")))
@@ -69,10 +77,6 @@
                (assert (object ?w urdf quad ((0 1 2) (0 0 0 1)) :urdf ,quad-urdf))
                (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
              )))))))
-;;
-;;The method "spawn-tree" spawns the environment objects into the environment
-;;for having a realistic terrain.
-;;
 (defun spawn-tree ()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
   (force-ll (prolog `(and (bullet-world ?w)
@@ -89,55 +93,14 @@
                           (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
                                           :mesh tree1 :mass 0.2 :color (0 0 0)))))))
 
-;;
-;;This method "pointing-into-direction" calls the human-robot and let him point into a direction
-;;where possible SoI (Subject of Interests) are.
-;;ToDO: the position of the human to show into the direction of Subject of Interest
-(defun pointing-into-direction ()
- (crs:prolog
- `(assert (btr:joint-state ?w genius (( "right_shoulder_joint_x" 0.06) ;;0.1
-                                     ( "right_shoulder_joint_y" -0.25)  ;;0.0 0.40
-                                     ( "right_shoulder_joint_z" 0.96)  ;;0.6 0.500
-                                     ( "left_upper_arm_joint_x" 0.1)
-                                     ( "left_upper_arm_joint_y" 3.0)
-                                     ( "left_upper_arm_joint_z" -0.5))))))
-;;
-;; build the costmap from position of the robot 
-;;
-(defun go-into-direction ()
-  (roslisp:ros-info (sherpa-spatial-relations) "GO INTO POINTED DIRECTION")
- ; (change-tree)
-  (let* ((transform-1 (cl-transforms:make-transform (cl-transforms:make-3d-vector 6 -0.5 0)
-                                                    (cl-transforms:make-quaternion 0 0 0 1)))
-         (desig (make-designator 'desig-props:location `((right-of ,transform-1))))
-         
-         (pose (reference desig)))
-    (roslisp:ros-info (sherpa-spatial-relations) "RETURN POSITION ~a FOR ROBOT TO GO" pose)
-    (prolog `(and 
-              (bullet-world ?w)
-              (assert (object-pose ?w quad-1 ,pose))))))
-
-
-(defun go-into-default ()
-  (let* ((transform-1 (cl-transforms:make-transform (cl-transforms:make-3d-vector 6 -0.5 0)
-                                                    (cl-transforms:make-quaternion 0 0 0 1)))
-         (desig (make-designator 'desig-props:location `((used-arm ,transform-1))))
-         
-         (pose (reference desig)))
-    (prolog `(and 
-              (bullet-world ?w)
-              (assert (object-pose ?w quad-1 ,pose))))))
-
-
-;;
-;;Here the Subject of Interest will be spawned into the world
-;;
 (defun spawn-object ()
+"we spawn the subject of interest"
  (force-ll 
    (prolog `(and (bullet-world ?w)
 		 (assert (object ?w mesh hat ((7 0 0)(0 0 0 1))
 				 :mesh hat :mass 0.2 :color (1 0 0)))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;POSITION AND NAMES OF OBJECTS IN WORLD;;;;;;;;;;;;;;;;;;;;;;;;
 (defun get-pose ( name)
  (prolog `(joint-state ,name "right_shoulder_joint_x"))                            
 )
@@ -150,22 +113,57 @@
          (a-list (assoc '?pose list)))
     (cdr a-list)))
 
-(defun arm-length ()
-  )
-
-(defun leg-length ()) 
- (defun look-for-object ()
-    
-)
-
-(defun robot-name-from-world (name)
+(defun robot-name-extract-from-world (rob-name)
   (let ((list (force-ll 
                (prolog `(and (bullet-world ?w) 
                              (object-type ?w ?robot robot-object))))))
     (loop
       (when (equal (car list) nil) (return))
-      (when (equal name (cdr (assoc '?robot (car list)))) (return (cdr (assoc '?robot (car list))))) 
+      (when (equal rob-name (cdr (assoc '?robot (car list)))) (return (cdr (assoc '?robot (car list))))) 
       (setf list (cdr list)))))
+
+;; AT THIS PART OF THIS PROGRAMM WE WILL NOW WORKING WITH COMMAND AND INSTRUCTIONS IN FORM OF
+;; HUMAN GESTURES.
+
+
+(defun pointing-direction ()
+  (pointing-into-bullet)
+ ; (pointing-into-gazebo)
+  (arm-extension-bullet)
+;  (arm-extension-gazebo)
+)
+
+
+;; CREATING THE COSTMAP AND GENERATING SAMPLES FOR THE ROBOT 
+;; WHERE TO MOVE AND TO NAVIGATE. FOR THE HUMAN WE WILL
+;; RESTRICT THE AREA OF THE COSTMAP WITH CONDITIONS.
+
+(defun create-sampling-area-bullet ()
+  (let* ((x-val (+ 1 (get-joint-value-bullet "right_shoulder_joint_x"))) ;;move 2 m
+         (y-val (get-joint-value-bullet "right_shoulder_joint_y"))
+         (z-val (get-joint-value-bullet "right_shoulder_joint_z"))
+         (transform (cl-transforms:make-pose (cl-transforms:make-3d-vector x-val y-val z-val)
+                                             (cl-transforms:make-quaternion 0 0 0 1))))
+
+         (make-designator 'desig-props:location `((go-to ,transform)))))
+                     
+(defun create-sampling-area-gazebo ())                    
+
+
+
+
+
+
+
+
+
+
+
+
+;FILE POINTING-GESTURES.LISP
+;(poniting-into-gazebo)
+;(poniting-into-bullet)
+
 ;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;
 (defun make-obj-desig-close-to-tree ()
  (format t "create object desig for tree ~%")
@@ -214,7 +212,29 @@
 
 ;;;;;;;;;;;;;Commented;;;;;;;;;;;;;
 
+;; (defun go-into-direction ()
+;;   (roslisp:ros-info (sherpa-spatial-relations) "GO INTO POINTED DIRECTION")
+;;  ; (change-tree)
+;;   (let* ((transform-1 (cl-transforms:make-transform (cl-transforms:make-3d-vector 6 -0.5 0)
+;;                                                     (cl-transforms:make-quaternion 0 0 0 1)))
+;;          (desig (make-designator 'desig-props:location `((right-of ,transform-1))))
+         
+;;          (pose (reference desig)))
+;;     (roslisp:ros-info (sherpa-spatial-relations) "RETURN POSITION ~a FOR ROBOT TO GO" pose)
+;;     (prolog `(and 
+;;               (bullet-world ?w)
+;;               (assert (object-pose ?w quad-1 ,pose))))))
 
+
+;; (defun go-into-default ()
+;;   (let* ((transform-1 (cl-transforms:make-transform (cl-transforms:make-3d-vector 6 -0.5 0)
+;;                                                     (cl-transforms:make-quaternion 0 0 0 1)))
+;;          (desig (make-designator 'desig-props:location `((used-arm ,transform-1))))
+         
+;;          (pose (reference desig)))
+;;     (prolog `(and 
+;;               (bullet-world ?w)
+;;               (assert (object-pose ?w quad-1 ,pose))))))
 
 ;;(defun pointing-into-direction ()
 ;; (crs:prolog
@@ -489,31 +509,3 @@
 ;;  (start-myros)
 ;;  (execute-right-arm-trajectory (position-to-trajectory)))
 
-(defun init-joint ()
- (setf *joint-states-subscriber*
-        (roslisp:subscribe "trajectory_msgs/JointTrajectory"
-                          "trajectory_msgs/JointTrajectoryPoint"
-                           #'joint-states-cb)))
- 
-
-(defun joint-states-cb (msg)
-  (roslisp:with-fields (name position) msg
-    (setf
-     *joint-states*
-     (loop for i from 0 below (length name)
-           for n = (elt name i)
-           for p = (elt position i)
-           collect (cons n p)))))
-
-;; (defun joint-states ()
-;;   *joint-states*
-;;   (format t "*joint-states* ~a~%" *joint-states*)))
-
-(defun get-joint-value (name)
-  (let* ((joint-states (joint-states))
-         (joint-state
-           (nth (position name joint-states
-                          :test (lambda (name state)
-                                  (equal name (car state))))
-                joint-states)))
-    (cdr joint-state)))
