@@ -36,7 +36,10 @@
   <depend package="sensor_msgs"/>
   <depend package="trajectory_msgs"/>  
   <depend package="household_objects_database_msgs"/>
+  <depend package="geometry_msgs"/>
+  <!-- <depend package="bullet_reasoning"/> -->
   <depend package="control_msgs"/>
+
 </package>
 
 

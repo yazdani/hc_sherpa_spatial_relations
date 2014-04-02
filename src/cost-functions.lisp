@@ -28,10 +28,10 @@
 
 (in-package :sherpa)
 
-(defun make-spatial-relation-cost-function (location axis pred)
+(defun make-spatial-relation-cost-function (location axis pred threshold)
   (roslisp:ros-info (sherpa-spatial-relations) "calculate the costmap")
-  (let* ((location1 (cl-transforms::pose->transform location))
-         (world->location-transformation (cl-transforms:transform-inv location1)))
+ (let* ((transformation (cl-transforms:pose->transform location))
+         (world->location-transformation (cl-transforms:transform-inv transformation)))
     (lambda (x y)
       (let* ((point (cl-transforms:transform-point world->location-transformation
                                                    (cl-transforms:make-3d-vector x y 0)))
@@ -41,28 +41,36 @@
              (mode (sqrt (+  (* (cl-transforms:x point) (cl-transforms:x point))
                              (* (cl-transforms:y point) (cl-transforms:y point))))))
         (if (funcall pred coord 0.0d0)
-            (abs (/ coord mode))
+            (if (> (abs (/ coord mode)) threshold)
+                (abs (/ coord mode))
+                0.0d0)
             0.0d0)))))
 
-(defun make-cost-function-for-gesture (location axis pred)
-  (roslisp:ros-info (sherpa-spatial-relations) "calculate the costmap")
-  (let* ((location1 (cl-transforms::pose->transform location))
-        (world->location-transformation (cl-transforms:transform-inv location)))
-    (lambda (x y)
-      (let* ((point (cl-transforms:transform-point world->location-transformation
-                                                   (cl-transforms:make-3d-vector x y 0)))
-             (coord (ecase axis
-                      (:x (cl-transforms:x point))
-                      (:y (cl-transforms:y point))))
-             (mode (sqrt (+  (* (cl-transforms:x point) (cl-transforms:x point))
-                            (* (cl-transforms:y point) (cl-transforms:y point))))))
-        (if (funcall pred coord 0.0d0)
-	     (abs (/ coord mode))
-            0.0d0)))))
+;; (defun make-costmap-with-angle-function (location)
+;;   (let* ((get-3d-vector (cl-transforms:origin location))
+;;          (get-y-value (cl-transforms:y get-3d-vector)))
+;;     (format t "location is : ~a~%" location)
+;;     (format t "orientation is: ~a~%" (cl-transforms:axis-angle->quaternion
+;;                                       (cl-transforms:make-3d-vector 0 1 0)
+;;                                       get-y-value))
+;;     (lambda (y)
+;;       ;; (declare (ignore x z))
+;;       (list (cl-transforms:axis-angle->quaternion
+;;                                                (cl-transforms:make-3d-vector 0 y 0)
+;;                                                       get-y-value)))
+;;     ;; ))
+;;   ))
 
 (defun make-constant-height-function (height)
+  (format t "list height: ~a~%" (list height))
   (lambda (x y)
     (declare (ignore x y))
     (list height)))
 
-
+;; (defun make-orientation-function (location)
+;;  (format t "location: ~a~%" (list location))
+;;  (lambda (x y location)  
+;;  (declare (ignore x location))
+;;    (list (cl-transforms:axis-angle->quaternion 
+;;           (cl-transforms:make-3d-vector 0 y 0) 
+;;           -0.25))))

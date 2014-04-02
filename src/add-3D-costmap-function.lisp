@@ -1,3 +1,4 @@
+;;;
 ;;; Copyright (c) 2014, Fereshta Yazdani <yazdani@cs.uni-bremen.de>
 ;;; All rights reserved.
 ;; 
@@ -26,40 +27,4 @@
 ;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;; POSSIBILITY OF SUCH DAMAGE.
 
-(defsystem sherpa-spatial-relations
-  :author "Fereshta Yazdani <yazdani@cs.uni-bremen.de>"
-  :license "BSD"
-  :description "SHERPA SPATIAL RELATIONS"
-  
-  :depends-on (cram-language
-               location-costmap
-               roslisp
-               cram-pr2-knowledge
-               pr2-manipulation-knowledge
-;;               cram-plan-library
-;;               pr2-manipulation-process-module
-               cram-environment-representation
-;;               object-location-designators
-;;               cram-plan-knowledge
-               projection-process-modules
- ;;              simple-knowledge
-               bullet-reasoning-designators
-               control_msgs-msg
-	       ;; geometry_msgs-msg
-	       ;; household_objects_database_msgs-msg
-	       ;; household_objects_database_msgs-srv
-               actionlib)
- :components 
- ((:module "src"
-	   :components
-	   ((:file "package")
-	    (:file "cost-functions" :depends-on ("package"))
-	    (:file "prolog" :depends-on ("package" "cost-functions"))
-	    (:file "costmap-knowledge" :depends-on("package"))
-	    (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge" "environment-objects" "pointing-gesture" "calculations"))
-	    (:file "environment-objects" :depends-on("package")) 
-	     (:file "pointing-gesture" :depends-on("package"))
-	   (:file "calculations" :depends-on("package"))  ))))
-;;	    (:file "human-specific-objects" :depends-on("package"))
-;;      (:file "designator-integration" :depends-on("package"))
-;,      ))))
+

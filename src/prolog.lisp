@@ -29,6 +29,8 @@
 (in-package :sherpa)
 
 (defmethod costmap-generator-name->score ((name (eql 'sherpa-spatial-generator))) 5)
+(defmethod costmap-generator-name->score ((name (eql 'support-object))) 3)
+(defmethod costmap-generator-name->score ((name (eql 'sherpa-angle-generator))) 4)
 
 (defclass range-generator () ())
 (defmethod costmap-generator-name->score ((name range-generator)) 2)
@@ -41,37 +43,54 @@
   (<- (desig-costmap ?designator ?costmap)
     (desig-prop ?designator (go-to ?location))
     (costmap ?costmap)
-    (format "hallo6 ?location: ~a~%" ?location)
-    ;; (costmap ?costmap)
-    (costmap-add-function 
-     sherpa-spatial-generator
-     (make-spatial-relation-cost-function ?location :X >)
-     ?costmap)
-   ;;  (format "hallo6 ?location: ~a~%" ?location)
+    (format "hallo function~%")
+    (costmap-add-function sherpa-spatial-generator
+                          (make-spatial-relation-cost-function ?location :X > 0.99)
+                          ?costmap)
+    ;; (debug-costmap ?costmap 0.5)
+    ;; (debug-costmap ?costmap 0.4)
+    ;; (costmap-add-orientation-generator (make-orientation-function 
+    ;;                                     ?location)
+    ;;                                    ?costmap)
+    ;; (costmap-add-height-generator (make-constant-height-function
+    ;;                                3.0) 
+    ;;                               costmap)
+    ;; (costmap-add-function sherpa-angle-generator
+    ;;                       (make-costmap-with-angle-function ?location)
+    ;;                       ?costmap)))
+    ;; (costmap-add-height-generator (make-constant-height-function
+    ;;                              3.0) 
+    ;;                             ?costmap) 
+    ;; (costmap-add-orientation-generator (add-costmap-function-object ?costmap
+    ;;          )
+    ;;                                    ?costmap)
     (instance-of range-generator ?range-generator-id-1)
-    (costmap-add-function
-     ?range-generator-id-1
-   (make-range-cost-function ?location 2.0 )
-     ?costmap)
-    
-    (costmap-add-height-generator
-     (make-constant-height-function 3.0)
-     ?costmap)
-))
+    (costmap-add-function ?range-generator-id-1
+                          (make-range-cost-function ?location 7.5)
+                          ?costmap)
+    (costmap-add-height-generator (make-constant-height-function
+                                   3.0)
+                                  ?costmap)))
+    ;; (instance-of gaussian-generator ?gaussian-generator-id)
+    ;; (costmap-add-function ?gaussian-generator-id
+    ;;                       (make-location-cost-function ?location 1.5)
+    ;;                       ?costmap)
+    ;; (costmap-add-function sherpa-angle-generator
+;;                       (make-costmap-with-angle ?location :Y <)
+;;                        ?costmap)
 ;;     (format "hallo15~%")
 ;; ))
-
-    ;; (bullet-world ?world)
-    ;; (once
-    ;;  (cram-environment-representation:object-designator-name
-    ;;   ?object ?object-name)
-    ;;  (and (lisp-type ?object symbol)
-    ;;       (== ?object ?object-name)))
-    ;; (costmap ?costmap)
-    ;; (costmap-add-function
-    ;;  sherpa-spatial-generator
-    ;;  (make-object-costmap-generator ?object-instance)
-    ;;  ?costmap))
+;; (bullet-world ?world)
+;; (once
+;;  (cram-environment-representation:object-designator-name
+;;   ?object ?object-name)
+;;  (and (lisp-type ?object symbol)
+;;       (== ?object ?object-name)))
+;; (costmap ?costmap)
+;; (costmap-add-function
+;;  sherpa-spatial-generator
+;;  (make-object-costmap-generator ?object-instance)
+;;  ?costmap))
 ;; (<- (desig-costmap ?designator ?costmap)
 ;;   (desig-prop ?designator (right-of ?location))
 ;;   (costmap ?costmap)

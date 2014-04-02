@@ -34,10 +34,10 @@
 
 ;; (defun start-scenario ()
 ;;  (start-bullet-with-robots)
-;;  (spawn-robot)
+;;  (spawn-object)
 ;;  (spawn-tree)
-;;  (pointing-direction)
-;;  s
+;;  (pointing-into-bullet)
+;;  (reference (create-sampling-area-bullet))
 ;; s
 ;; s
 
@@ -77,6 +77,7 @@
                (assert (object ?w urdf quad ((0 1 2) (0 0 0 1)) :urdf ,quad-urdf))
                (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
              )))))))
+
 (defun spawn-tree ()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
   (force-ll (prolog `(and (bullet-world ?w)
@@ -113,18 +114,17 @@
          (a-list (assoc '?pose list)))
     (cdr a-list)))
 
-(defun robot-name-extract-from-world (rob-name)
-  (let ((list (force-ll 
-               (prolog `(and (bullet-world ?w) 
-                             (object-type ?w ?robot robot-object))))))
-    (loop
-      (when (equal (car list) nil) (return))
-      (when (equal rob-name (cdr (assoc '?robot (car list)))) (return (cdr (assoc '?robot (car list))))) 
-      (setf list (cdr list)))))
-
+;; (defun robot-name-extract-from-world (rob-name)
+;;   (let ((list (force-ll 
+;;                (prolog `(and (bullet-world ?w) 
+;;                              (object-type ?w ?robot robot-object))))))
+;;     (loop
+;;       (when (equal (car list) nil) (return))
+;;       (when (equal rob-name (cdr (assoc '?robot (car list)))) (return (cdr (assoc '?robot (car list))))) 
+;;       (setf list (cdr list)))))
+        
 ;; AT THIS PART OF THIS PROGRAMM WE WILL NOW WORKING WITH COMMAND AND INSTRUCTIONS IN FORM OF
 ;; HUMAN GESTURES.
-
 
 (defun pointing-direction ()
   (pointing-into-bullet)
@@ -133,33 +133,49 @@
 ;  (arm-extension-gazebo)
 )
 
-
 ;; CREATING THE COSTMAP AND GENERATING SAMPLES FOR THE ROBOT 
 ;; WHERE TO MOVE AND TO NAVIGATE. FOR THE HUMAN WE WILL
 ;; RESTRICT THE AREA OF THE COSTMAP WITH CONDITIONS.
 
-(defun create-sampling-area-bullet ()
+
+
+(defun create-cylinder-from-genius-arm ()
+  ;;take the shoulder values for positioning;;
   (let* ((x-val (+ 1 (get-joint-value-bullet "right_shoulder_joint_x"))) ;;move 2 m
          (y-val (get-joint-value-bullet "right_shoulder_joint_y"))
          (z-val (get-joint-value-bullet "right_shoulder_joint_z"))
+         ;; (angle (get-link-angle-bullet "name-of-link"))
          (transform (cl-transforms:make-pose (cl-transforms:make-3d-vector x-val y-val z-val)
-                                             (cl-transforms:make-quaternion 0 0 0 1))))
-
-         (make-designator 'desig-props:location `((go-to ,transform)))))
-                     
-(defun create-sampling-area-gazebo ())                    
-
-
-
-
+                                            (cl-transforms:make-quaternion 0 0 0 1)))
+                                          ;  (cl-transforms:make-angle->axis
+          (desig (make-designator 'desig-props:location `((go-to ,transform))))
+         (costmap-pose (reference desig)))
+    (format t "costmap-pose is: ~a~%" costmap-pose)
+    (format t "location is: ~a~%" desig)
+  desig))
 
 
+(defun z-size-object (name)
+  (let* ((size (btr:aabb (object *current-bullet-world* name)))
+        (dimension (cl-bullet:bounding-box-dimensions size)))
+    (cl-transforms:z dimension)))
+
+(defun y-size-object (name)
+  (let* ((size (btr:aabb (object *current-bullet-world* name)))
+        (dimension (cl-bullet:bounding-box-dimensions size)))
+    (cl-transforms:y dimension)))
+
+(defun x-size-object (name)
+  (let* ((size (btr:aabb (object *current-bullet-world* name)))
+        (dimension (cl-bullet:bounding-box-dimensions size)))
+    (cl-transforms:x dimension)))
 
 
-
-
-
-
+(defun create-sampling-area-gazebo ()
+;; For Gazebo work we have to add to the x value the distance of r-upper-arm-to-r-hand-length-gazebo
+;;
+;;
+)                    
 ;FILE POINTING-GESTURES.LISP
 ;(poniting-into-gazebo)
 ;(poniting-into-bullet)
@@ -171,7 +187,6 @@
                                                   (cl-transforms:make-quaternion 0 0 0 1))))
          (make-designator 'desig-props:location `((right-of ,transform)))))
 
-(defun create-object-costmap ())
 ;; instead of giving the exactly pose, we can look for the object of interest into the environment
 ;; and call the pose.
  ;; (let* ((transform (cl-transforms:make-transform (cl-transforms:make-3d-vector 0 1 2)
@@ -192,19 +207,28 @@
   (let ((desig (make-designator 'desig-props:location `((right-of ,obj-pose)))))
     (reference desig)))
 
+(defun tester (transform)
+  (cpl-impl:top-level
+    (cram-language-designator-support:with-designators
+        ((des-for-loc (location `((go-to ,transform)))))
+      (prolog `(assign-obj-loc ,des-for-loc)))))
 
 (def-fact-group build-test-world ()
-  (<- (compute-obj-pose ?desig)
+  (<- (assign-obj-loc ?desig)
     (once
      (bound ?desig)
      (bullet-world ?w)
      (format "hello~%")
-     (desig-solutions ?desig ?solutions)
+     (desig-solutions ?desig ?solutions) ;;here we are doing reference automatically
      (format "1 ~a~%" ?solutions)
      (take 1 ?solutions ?8-solutions) 
-     (btr::generate ?poses-on (btr::obj-poses-on 'tree-4 ?8-solutions ?w))
-     (member ?solution ?poses-on)
-     (assert (object-pose ?w 'tree-4 ?solution)))))
+     (format "2 ~a~%" ?solutions)
+    ; (btr::generate ?poses-on (btr::obj-poses-on 'quad ?8-solutions ?w))
+     (format "3 ~a~%" ?solutions)
+     (member ?solution ?8-solutions)
+     (format "4 ~a~%" ?solutions)
+     (assert (btr::object-pose-on ?w ?obj-name ?solution)))))
+  ;   (assert (object-pose ?w 'quad ?solution)))))
 
 
 
