@@ -102,17 +102,49 @@
 				 :mesh hat :mass 0.2 :color (1 0 0)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;POSITION AND NAMES OF OBJECTS IN WORLD;;;;;;;;;;;;;;;;;;;;;;;;
-(defun get-pose ( name)
- (prolog `(joint-state ,name "right_shoulder_joint_x"))                            
-)
+;; (defun get-pose ( name)
+;;  (prolog `(joint-state ,name "right_shoulder_joint_x"))                            
+;; )
 
-(defun get-object-pose (name)
+(defun get-object-pose (obj-name)
   (let* ((lists (force-ll
               (prolog `(and (bullet-world ?w)
-                            (object-pose ?w ,name ?pose)))))
+                            (object-pose ?w ,obj-name ?pose)))))
          (list (car lists))
          (a-list (assoc '?pose list)))
     (cdr a-list)))
+
+(defun robot-pr2 ()
+(force-ll(prolog `(and (bullet-world ?w) (camera-frame ?robot ?cam))))
+  (prolog `(and 
+            (bullet-world ?w)
+            (object-pose ?w ?robot ?pose))))
+
+(defun set-object-new-pose (pose obj-name)
+  (let* (;(obj (cdaar (prolog `(and
+          ;              (bullet-world ?w)
+           ;             (object ?w ,obj-name)))))
+         (vector (cl-transforms:origin pose))
+         (vec-x  (cl-transforms:x vector))
+         (vec-y  (cl-transforms:y vector))
+         (vec-z   (cl-transforms:z vector))
+         (height-z   (+ 2 vec-z))
+         (quaternion (cl-transforms:orientation pose))
+         (quat-x  (cl-transforms:x quaternion))
+         (quat-y  (cl-transforms:y quaternion))
+         (quat-z   (cl-transforms:z quaternion))
+         (quat-w   (cl-transforms:w quaternion)))
+    (cond ((eql obj-name 'quad)
+           (prolog `(and 
+                     (bullet-world ?w)
+                     (assert (object-pose ?w ,obj-name ((,vec-x ,vec-y ,height-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
+           (format t "here~%"))
+          (t 
+           
+           (prolog `(and 
+                     (bullet-world ?w)
+                     (assert (object-pose ?w ,obj-name ((,vec-x ,vec-y ,vec-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
+             (format t "herew~%")))))
 
 ;; (defun robot-name-extract-from-world (rob-name)
 ;;   (let ((list (force-ll 
@@ -155,18 +187,18 @@
   desig))
 
 
-(defun z-size-object (name)
-  (let* ((size (btr:aabb (object *current-bullet-world* name)))
+(defun z-size-object (obj-name)
+  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
         (dimension (cl-bullet:bounding-box-dimensions size)))
     (cl-transforms:z dimension)))
 
-(defun y-size-object (name)
-  (let* ((size (btr:aabb (object *current-bullet-world* name)))
+(defun y-size-object (obj-name)
+  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
         (dimension (cl-bullet:bounding-box-dimensions size)))
     (cl-transforms:y dimension)))
 
-(defun x-size-object (name)
-  (let* ((size (btr:aabb (object *current-bullet-world* name)))
+(defun x-size-object (obj-name)
+  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
         (dimension (cl-bullet:bounding-box-dimensions size)))
     (cl-transforms:x dimension)))
 
