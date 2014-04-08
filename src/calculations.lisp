@@ -193,4 +193,4 @@
 
 
 (defun arm-extension-bullet ()
-  (+ 2 (arm-length)))
+  (+ 2 (right-shoulder-to-right-upper-arm-length-bullet)))
