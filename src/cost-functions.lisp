@@ -30,8 +30,9 @@
 
 (defun make-spatial-relation-cost-function (location axis pred threshold)
   (roslisp:ros-info (sherpa-spatial-relations) "calculate the costmap")
- (let* ((transformation (cl-transforms:pose->transform location))
+  (let* ((transformation (cl-transforms:pose->transform location))
          (world->location-transformation (cl-transforms:transform-inv transformation)))
+    (roslisp:ros-info (sherpa-spatial-relations) "hi")
     (lambda (x y)
       (let* ((point (cl-transforms:transform-point world->location-transformation
                                                    (cl-transforms:make-3d-vector x y 0)))
@@ -45,6 +46,8 @@
                 (abs (/ coord mode))
                 0.0d0)
             0.0d0)))))
+
+
 
 ;; (defun make-costmap-with-angle-function (location)
 ;;   (let* ((get-3d-vector (cl-transforms:origin location))

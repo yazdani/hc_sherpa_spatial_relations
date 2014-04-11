@@ -194,3 +194,19 @@
 
 (defun arm-extension-bullet ()
   (+ 2 (right-shoulder-to-right-upper-arm-length-bullet)))
+
+(defun z-size-object (obj-name)
+  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
+        (dimension (cl-bullet:bounding-box-dimensions size)))
+    (cl-transforms:z dimension)))
+
+(defun y-size-object (obj-name)
+  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
+        (dimension (cl-bullet:bounding-box-dimensions size)))
+    (cl-transforms:y dimension)))
+
+(defun x-size-object (obj-name)
+  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
+        (dimension (cl-bullet:bounding-box-dimensions size)))
+    (cl-transforms:x dimension)))
+

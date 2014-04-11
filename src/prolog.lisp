@@ -32,20 +32,30 @@
 (defmethod costmap-generator-name->score ((name (eql 'support-object))) 3)
 (defmethod costmap-generator-name->score ((name (eql 'sherpa-angle-generator))) 4)
 
+(defmethod costmap-generator-name->score ((name (eql 'visibility-distribution)))
+  9)
+
 (defclass range-generator () ())
 (defmethod costmap-generator-name->score ((name range-generator)) 2)
 
 (defclass gaussian-generator () ())
 (defmethod costmap-generator-name->score ((name gaussian-generator)) 6)
 
+(def-fact-group robot-metadata (end-effector-link robot)
+
+  (<- (robot genius)))
+
 (def-fact-group spatial-relations-costmap (desig-costmap)
-  
+
   (<- (desig-costmap ?designator ?costmap)
-    (desig-prop ?designator (go-to ?location))
+    (format "hi1 ~a~%" ?costmap)
+    (desig-prop ?designator (go-to ?position))
+    (desig-prop ?designator (far-from ?coll-obj))
+    ;;   (desig-prop ?designator (far-from ?obj))
     (costmap ?costmap)
-    (format "hallo function~%")
+   (format "hi2~%")
     (costmap-add-function sherpa-spatial-generator
-                          (make-spatial-relation-cost-function ?location :X > 0.99)
+                          (make-spatial-relation-cost-function ?position :X > 0.99)
                           ?costmap)
     ;; (debug-costmap ?costmap 0.5)
     ;; (debug-costmap ?costmap 0.4)
@@ -66,11 +76,60 @@
     ;;                                    ?costmap)
     (instance-of range-generator ?range-generator-id-1)
     (costmap-add-function ?range-generator-id-1
-                          (make-range-cost-function ?location 7.5)
+                          (make-range-cost-function ?position 7.5)
                           ?costmap)
+    (format "costmap~a~%" ?costmap)
+
     (costmap-add-height-generator (make-constant-height-function
                                    3.0)
-                                  ?costmap)))
+                                  ?costmap))
+  
+  (setf  btr::*costmap-z* 0.6)
+  (setf  btr::*costmap-tilt* 
+         (cl-transforms:axis-angle->quaternion
+          (cl-transforms:make-3d-vector 0 1 0)
+          -0.25)))
+  ;; (<- (solutions-not-in-collision ?desig ?obj-to-check ?pose)
+  ;;   (format "gointo solution~%")
+  ;;   (bullet-world ?world)
+  ;;   (with-copied-world ?world
+  ;;     (format "hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii: object-name ~a~%" ?obj-name)
+  ;;     (extract-object-instance-name ?obj-to-check ?obj-name)
+  ;;     (format "hii: object-name ~a~%" ?obj-name)
+  ;;     (assert (object-pose ?world ?obj-name ?pose))
+  ;;     (format "obj-pose: ~a ~%" (object-pose ?w ?obj-name ?pose)))))
+  ;;     ;; (forall
+  ;;     ;;  (contact ?world ?obj-name ?new-obj-name)
+  ;;     ;;  (and
+  ;;     ;;   (object-type ?world ?new-obj-name ?type)
+  ;;     ;;   ?new-obj-name ?type ?link)
+  ;;     ;;  (or
+  ;;     ;;   ;;             (object-type ?world ?new-obj-name btr::semantic-map-object)
+  ;;     ;;   (and (robot ?new-obj-name)
+  ;;     ;;        (attached ?world ?new-obj-name ?_ ?obj-name)))))))
+
+;; (def-fact-group desig-location-utils ()
+;;  (<- (checking-desig-with-type ?desig ?name ?type)
+;;    ()
+
+;;  (<- (extract-object-instance-name ?name)
+;;     (lisp-type ?name symbol))
+
+;;   (<- (environment-object-type ?world ?obj-name ?obj-type)
+;;     (bullet-world ?world)
+;;     (format "checking if working ~a~%" ?world)
+;;     (object ?world ?obj-name)
+;;   (format "checking if working2 ~a~%" ?obj-name)
+;;     (%object ?world ?obj-name ?obj-type)
+;;   (format "checking if working3 ~a~%" ?obj-type)))
+  ;  (lisp-type ?obj-type environment-object)
+; (format "checking if working4 ~a~%" environment-object)
+ ;   (get-slot-value ?obj-type types ?types)
+ ;(format "checking if working5 ~a~a~%" types ?types)
+;    (member ?obj-type ?types)))
+
+
+
     ;; (instance-of gaussian-generator ?gaussian-generator-id)
     ;; (costmap-add-function ?gaussian-generator-id
     ;;                       (make-location-cost-function ?location 1.5)

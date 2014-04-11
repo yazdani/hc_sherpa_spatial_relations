@@ -39,7 +39,7 @@
         #:cram-reasoning
         #:cram-utilities
         #:btr)
-  (:shadowing-import-from #:btr object pose object-pose width height robot)
+  (:shadowing-import-from #:btr object household-object pose object-pose width height robot)
   (:import-from #:cram-reasoning #:<- #:def-fact-group)
   (:import-from #:cram-pr2-knowledge pr2)
   (:export hat tree)

@@ -32,15 +32,6 @@
 (defvar *joint-states-subscriber* nil
   "Subscriber to /joint_states.")
 
-;; (defun start-scenario ()
-;;  (start-bullet-with-robots)
-;;  (spawn-object)
-;;  (spawn-tree)
-;;  (pointing-into-bullet)
-;;  (reference (create-sampling-area-bullet))
-;; s
-;; s
-
 (defun start-myros ()
   (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
   (roslisp-utilities:startup-ros :anonymous nil))
@@ -49,7 +40,7 @@
   (roslisp:ros-info (sherpa-spatial-relations) "KILL the ROSNODE")
   (roslisp-utilities:shutdown-ros))
 
-;; HERE WE ARE AT THE BEGINNING OF OUT PROGRAMM AND WOULD LIKE TO
+;; HERE WE ARE AT THE BEGINNING OF THE PROGRAMM AND WOULD LIKE TO
 ;; START THE REASONING. BUT BEFORE STARTING WE HAVE TO BUILD OUR
 ;; SYSTEM, THAT MEANS WE HAVE TO BUILD THE BULLET WORLD WITH ALL
 ;; THE IMPORTANT OBJECTS INTO THE WORLD. THE FOLLOWING METHODS
@@ -81,18 +72,19 @@
 (defun spawn-tree ()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
   (force-ll (prolog `(and (bullet-world ?w)
-                          (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
-                                          :mesh tree1 :mass 0.2 :color (0 0 0)))
-                          (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
-                                          :mesh tree3 :mass 0.2 :color (0 0 0)))
+                          ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
+                          ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                          ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
+                          ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
                           (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
                                           :mesh tree4 :mass 0.2 :color (0 0 0)))
-                          (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
-                                          :mesh tree3 :mass 0.2 :color (0 0 0)))
-                          (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
-                                          :mesh tree2 :mass 0.2 :color (0 0 0)))
-                          (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
-                                          :mesh tree1 :mass 0.2 :color (0 0 0)))))))
+                          ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
+                          ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                          ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
+                          ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
+                          ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
+                          ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                          ))))
 
 (defun spawn-object ()
 "we spawn the subject of interest"
@@ -101,30 +93,36 @@
 		 (assert (object ?w mesh hat ((7 0 0)(0 0 0 1))
 				 :mesh hat :mass 0.2 :color (1 0 0)))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;POSITION AND NAMES OF OBJECTS IN WORLD;;;;;;;;;;;;;;;;;;;;;;;;
-;; (defun get-pose ( name)
-;;  (prolog `(joint-state ,name "right_shoulder_joint_x"))                            
-;; )
 
 (defun get-object-pose (obj-name)
   (let* ((lists (force-ll
-              (prolog `(and (bullet-world ?w)
+                 (prolog `(and (bullet-world ?w)
                             (object-pose ?w ,obj-name ?pose)))))
          (list (car lists))
          (a-list (assoc '?pose list)))
     (cdr a-list)))
 
-(defun robot-pr2 ()
-(force-ll(prolog `(and (bullet-world ?w) (camera-frame ?robot ?cam))))
-  (prolog `(and 
-            (bullet-world ?w)
-            (object-pose ?w ?robot ?pose))))
+(defun get-all-obstacles-poses ()
+  (let* ((all-poses (force-ll (prolog `(and
+                                        (bullet-world ?w)
+                                        (object-type ?w ?obj-name ?obj-type)))))
+         (list nil))
+        
+      (loop
+      (when (equal all-poses nil) (return list))
+      (when (equal 'environment-object
+                   (cdr ( assoc '?obj-type (car all-poses)))) 
+        (setf list 
+              (append list 
+                      (cons 
+                       (cons 
+                        (get-object-pose (cdr (assoc '?obj-name (car all-poses)))) 
+                        nil) 
+                       nil))))
+      (setf all-poses (cdr all-poses)))))
 
 (defun set-object-new-pose (pose obj-name)
-  (let* (;(obj (cdaar (prolog `(and
-          ;              (bullet-world ?w)
-           ;             (object ?w ,obj-name)))))
-         (vector (cl-transforms:origin pose))
+  (let* ((vector (cl-transforms:origin pose))
          (vec-x  (cl-transforms:x vector))
          (vec-y  (cl-transforms:y vector))
          (vec-z   (cl-transforms:z vector))
@@ -137,26 +135,23 @@
     (cond ((eql obj-name 'quad)
            (prolog `(and 
                      (bullet-world ?w)
-                     (assert (object-pose ?w ,obj-name ((,vec-x ,vec-y ,height-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
-           (format t "here~%"))
+                     (assert 
+                      (object-pose ?w ,obj-name 
+                                   ((,vec-x ,vec-y ,height-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
+           (format t "here1~%"))
           (t 
-           
            (prolog `(and 
                      (bullet-world ?w)
-                     (assert (object-pose ?w ,obj-name ((,vec-x ,vec-y ,vec-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
-             (format t "herew~%")))))
+                     (assert 
+                      (object-pose ?w ,obj-name 
+                                   ((,vec-x ,vec-y ,vec-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
+           (format t "here2~%")))))
 
-;; (defun robot-name-extract-from-world (rob-name)
-;;   (let ((list (force-ll 
-;;                (prolog `(and (bullet-world ?w) 
-;;                              (object-type ?w ?robot robot-object))))))
-;;     (loop
-;;       (when (equal (car list) nil) (return))
-;;       (when (equal rob-name (cdr (assoc '?robot (car list)))) (return (cdr (assoc '?robot (car list))))) 
-;;       (setf list (cdr list)))))
         
 ;; AT THIS PART OF THIS PROGRAMM WE WILL NOW WORKING WITH COMMAND AND INSTRUCTIONS IN FORM OF
 ;; HUMAN GESTURES.
+
+;;;;;;;;;;;;;;;;;;;;;;;;; CREATING DESIGNATOR AND POINTING INTO DIRECTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun pointing-direction ()
   (pointing-into-bullet)
@@ -169,8 +164,6 @@
 ;; WHERE TO MOVE AND TO NAVIGATE. FOR THE HUMAN WE WILL
 ;; RESTRICT THE AREA OF THE COSTMAP WITH CONDITIONS.
 
-
-
 (defun create-cylinder-from-genius-arm ()
   ;;take the shoulder values for positioning;;
   (let* ((x-val (+ 1 (get-joint-value-bullet "right_shoulder_joint_x"))) ;;move 2 m
@@ -178,95 +171,98 @@
          (z-val (get-joint-value-bullet "right_shoulder_joint_z"))
          ;; (angle (get-link-angle-bullet "name-of-link"))
          (transform (cl-transforms:make-pose (cl-transforms:make-3d-vector x-val y-val z-val)
-                                            (cl-transforms:make-quaternion 0 0 0 1)))
-                                          ;  (cl-transforms:make-angle->axis
-          (desig (make-designator 'desig-props:location `((go-to ,transform))))
+                                             (cl-transforms:make-quaternion 0 0 0 1)))
+                                        ;  (cl-transforms:make-angle->axis
+         (desig (make-designator 'desig-props:location `((go-to ,transform)
+                                                         (far-from tree-4))))
          (costmap-pose (reference desig)))
     (format t "costmap-pose is: ~a~%" costmap-pose)
     (format t "location is: ~a~%" desig)
-  desig))
-
-
-(defun z-size-object (obj-name)
-  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
-        (dimension (cl-bullet:bounding-box-dimensions size)))
-    (cl-transforms:z dimension)))
-
-(defun y-size-object (obj-name)
-  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
-        (dimension (cl-bullet:bounding-box-dimensions size)))
-    (cl-transforms:y dimension)))
-
-(defun x-size-object (obj-name)
-  (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
-        (dimension (cl-bullet:bounding-box-dimensions size)))
-    (cl-transforms:x dimension)))
-
-
-(defun create-sampling-area-gazebo ()
-;; For Gazebo work we have to add to the x value the distance of r-upper-arm-to-r-hand-length-gazebo
-;;
-;;
-)                    
-;FILE POINTING-GESTURES.LISP
-;(poniting-into-gazebo)
-;(poniting-into-bullet)
+    
+    costmap-pose))
 
 ;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;
 (defun make-obj-desig-close-to-tree ()
  (format t "create object desig for tree ~%")
- (let* ((transform (cl-transforms:make-transform (cl-transforms:make-3d-vector 0 0 0)
-                                                  (cl-transforms:make-quaternion 0 0 0 1))))
-         (make-designator 'desig-props:location `((right-of ,transform)))))
+ (let* ((transform (cl-transforms:make-pose (cl-transforms:make-3d-vector 0 0 0)
+                                                  (cl-transforms:make-quaternion 0 0 0 1)))
+         (desig (make-designator 'desig-props:location `((go-to ,transform)
+                                                        (far-from tree-4)))))
+   (prolog `(assign-rob-pos-on quad ,desig))))
 
-;; instead of giving the exactly pose, we can look for the object of interest into the environment
-;; and call the pose.
- ;; (let* ((transform (cl-transforms:make-transform (cl-transforms:make-3d-vector 0 1 2)
-   ;;                                               (cl-transforms:make-quaternion 0 0 0 1)))
-     ;;     (make-designator 'desig-props:location `((right-of ,transform))))))
+;;;;;;;;;;;;;Commented;;;;;;;;;;;;;
+(def-fact-group build-test-world ()
+ (<- (assign-rob-pos ?rob-name ?desig)
+ (format  "create object desig for robot ~%")
+    (once
+     (bound ?desig)
+ (format  "create object desig for robot1 ~%")
+     (bullet-world ?w)
+ (format  "create object desig for robot2~%")
+     (desig-solutions ?desig ?solutions) ;;here we are doing reference automatically
+ (format  "create object desig for robot3~%")
+     (take 1 ?solutions ?8-solutions) 
+   (btr::generate ?poses-on (btr::obj-poses-on ?rob-name ?8-solutions ?w))
+ (format  "create object desig for robot4~%")
+     (member ?solution ?8-solutions)
+     (format "4 ~a~%" ?solutions)
+     (assert (btr::object-pose-on ?w ?rob-name ?solution))))
 
-(defun make-obj-desig-close-to-robot ()
- (format t "create object desig for robot ~%")
- (let* ((pose (get-object-pose 'hat))
-         (desig (make-designator 'desig-props:location `((right-of ,pose)))))
-   (reference desig) ))
+  (<- (assign-rob-pos-on ?rob-name ?desig)
+    (once
+     (bound ?rob-name)
+     (bound ?desig)
+     (bullet-world ?w)
+     (desig-solutions ?desig ?solutions)
+     (take 8 ?solutions ?8-solutions)
+     (member ?solution ?8-solutions)
+     (assert (btr::object-pose-on ?w ?rob-name ?solution)))))
+
+(defun create-cylinder (radius height)
+  (let* ((main-area (* pi (* radius radius)))
+         (side-line (sqrt (+ (* radius radius) (* height height))))
+         (scope (* (* 2 pi) radius))
+         (mantle (* (* pi radius) side-line))
+         (volume (* (* main-area height) (/ 1 3))))
+    (format t "volume: ~a~%" volume)))
+
+;; (defun make-obj-desig-close-to-robot ()
+;;  (format t "create object desig for robot ~%")
+;;  (let* ((pose (get-object-pose 'hat))
+;;          (desig (make-designator 'desig-props:location `((right-of ,pose)))))
+;;    (reference desig) ))
 
 
 			      
-(defun go-to-obj (obj-pose)
-  "this function returns a designator by getting the obj-pose and generating the costmap from the
-  view of the object"
-  (let ((desig (make-designator 'desig-props:location `((right-of ,obj-pose)))))
-    (reference desig)))
+;; (defun go-to-obj (obj-pose)
+;;   "this function returns a designator by getting the obj-pose and generating the costmap from the
+;;   view of the object"
+;;   (let ((desig (make-designator 'desig-props:location `((right-of ,obj-pose)))))
+;;     (reference desig)))
 
-(defun tester (transform)
-  (cpl-impl:top-level
-    (cram-language-designator-support:with-designators
-        ((des-for-loc (location `((go-to ,transform)))))
-      (prolog `(assign-obj-loc ,des-for-loc)))))
+;; (defun tester (transform)
+;;   (cpl-impl:top-level
+;;     (cram-language-designator-support:with-designators
+;;         ((des-for-loc (location `((go-to ,transform)))))
+;;       (prolog `(assign-obj-loc ,des-for-loc)))))
 
-(def-fact-group build-test-world ()
-  (<- (assign-obj-loc ?desig)
-    (once
-     (bound ?desig)
-     (bullet-world ?w)
-     (format "hello~%")
-     (desig-solutions ?desig ?solutions) ;;here we are doing reference automatically
-     (format "1 ~a~%" ?solutions)
-     (take 1 ?solutions ?8-solutions) 
-     (format "2 ~a~%" ?solutions)
-    ; (btr::generate ?poses-on (btr::obj-poses-on 'quad ?8-solutions ?w))
-     (format "3 ~a~%" ?solutions)
-     (member ?solution ?8-solutions)
-     (format "4 ~a~%" ?solutions)
-     (assert (btr::object-pose-on ?w ?obj-name ?solution)))))
-  ;   (assert (object-pose ?w 'quad ?solution)))))
+;; (def-fact-group build-test-world ()
+;;   (<- (assign-obj-loc ?desig)
+;;     (once
+;;      (bound ?desig)
+;;      (bullet-world ?w)
+;;      (format "hello~%")
+;;      (desig-solutions ?desig ?solutions) ;;here we are doing reference automatically
+;;      (format "1 ~a~%" ?solutions)
+;;      (take 1 ?solutions ?8-solutions) 
+;;      (format "2 ~a~%" ?solutions)
+;;     ; (btr::generate ?poses-on (btr::obj-poses-on 'quad ?8-solutions ?w))
+;;      (format "3 ~a~%" ?solutions)
+;;      (member ?solution ?8-solutions)
+;;      (format "4 ~a~%" ?solutions)
+;;      (assert (btr::object-pose-on ?w ?obj-name ?solution)))))
+;;   ;   (assert (object-pose ?w 'quad ?solution)))))
 
-
-
-    
-
-;;;;;;;;;;;;;Commented;;;;;;;;;;;;;
 
 ;; (defun go-into-direction ()
 ;;   (roslisp:ros-info (sherpa-spatial-relations) "GO INTO POINTED DIRECTION")
@@ -565,3 +561,14 @@
 ;;  (start-myros)
 ;;  (execute-right-arm-trajectory (position-to-trajectory)))
 
+
+;; (defun object-extract-from-world (obj-name)
+;;   (let ((list (force-ll
+;;                (prolog `(and (bullet-world ?w)
+;;                              (%object ?w ?object ?obj-object))))))
+;;     (loop
+;;       (when (equal list nil) (return))
+;;       (when (equal obj-name 
+;;                    (cdr ( assoc '?object (car list)))) 
+;;         (return (cdr (assoc '?obj-object (car list)))))
+;;       (setf list (cdr list))))
