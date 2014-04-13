@@ -47,6 +47,23 @@
                 0.0d0)
             0.0d0)))))
 
+(defun make-object-bounding-box-costmap-gen (object)
+  (let* ((bounding-box (aabb object))
+         (dimensions-x/2 (/ (cl-transforms:x (bt:bounding-box-dimensions bounding-box))
+                            2))
+         (dimensions-y/2 (/ (cl-transforms:y (bt:bounding-box-dimensions bounding-box))
+                            2)))
+    (lambda (x y)
+      (if (and
+           (< x (+ (cl-transforms:x (cl-bullet:bounding-box-center bounding-box))
+                   dimensions-x/2))
+           (> x (- (cl-transforms:x (cl-bullet:bounding-box-center bounding-box))
+                   dimensions-x/2))
+           (< y (+ (cl-transforms:y (cl-bullet:bounding-box-center bounding-box))
+                   dimensions-y/2))
+           (> y (- (cl-transforms:y (cl-bullet:bounding-box-center bounding-box))
+                   dimensions-y/2)))
+          1.0 0.0))))
 
 
 ;; (defun make-costmap-with-angle-function (location)

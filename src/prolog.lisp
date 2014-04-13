@@ -34,6 +34,8 @@
 
 (defmethod costmap-generator-name->score ((name (eql 'visibility-distribution)))
   9)
+(defmethod costmap-generator-name->score ((name (eql 'on-the-bounding-box)))
+  6)
 
 (defclass range-generator () ())
 (defmethod costmap-generator-name->score ((name range-generator)) 2)
@@ -50,13 +52,13 @@
   (<- (desig-costmap ?designator ?costmap)
     (format "hi1 ~a~%" ?costmap)
     (desig-prop ?designator (go-to ?position))
-    (desig-prop ?designator (far-from ?coll-obj))
+;   (desig-prop ?designator (far-from ?coll-obj))
     ;;   (desig-prop ?designator (far-from ?obj))
-    (costmap ?costmap)
+;    (costmap ?costmap)
    (format "hi2~%")
-    (costmap-add-function sherpa-spatial-generator
-                          (make-spatial-relation-cost-function ?position :X > 0.99)
-                          ?costmap)
+ ;   (costmap-add-function sherpa-spatial-generator
+  ;                        (make-spatial-relation-cost-function ?position :X > 0.99)
+   ;                       ?costmap)
     ;; (debug-costmap ?costmap 0.5)
     ;; (debug-costmap ?costmap 0.4)
     ;; (costmap-add-orientation-generator (make-orientation-function 
@@ -74,21 +76,33 @@
     ;; (costmap-add-orientation-generator (add-costmap-function-object ?costmap
     ;;          )
     ;;                                    ?costmap)
-    (instance-of range-generator ?range-generator-id-1)
-    (costmap-add-function ?range-generator-id-1
-                          (make-range-cost-function ?position 7.5)
-                          ?costmap)
-    (format "costmap~a~%" ?costmap)
+   ; (instance-of range-generator ?range-generator-id-1)
+   ; (costmap-add-function ?range-generator-id-1
+    ;                      (make-range-cost-function ?position 7.5)
+     ;                     ?costmap)
+ ;   (format "costmap~a~%" ?costmap)
 
-    (costmap-add-height-generator (make-constant-height-function
-                                   3.0)
-                                  ?costmap))
+;    (costmap-add-height-generator (make-constant-height-function
+ ;                                  3.0)
+  ;                                ?costmap))
   
-  (setf  btr::*costmap-z* 0.6)
-  (setf  btr::*costmap-tilt* 
-         (cl-transforms:axis-angle->quaternion
-          (cl-transforms:make-3d-vector 0 1 0)
-          -0.25)))
+  ;; (setf  btr::*costmap-z* 0.6)
+  ;; (setf  btr::*costmap-tilt* 
+  ;;        (cl-transforms:axis-angle->quaternion
+  ;;         (cl-transforms:make-3d-vector 0 1 0)
+  ;;         -0.25))
+
+      (desig-prop ?designator (far-from ?object))
+      (bullet-world ?world)
+      (once
+       (or (cram-environment-representation:object-designator-name
+	    ?object ?object-instance-name)
+	   (== ?object ?object-instance-name)))
+      (%object ?world ?object-instance-name ?object-instance)
+      (costmap ?costmap)
+      (costmap-add-function
+       on-the-bounding-box (make-object-bounding-box-costmap-gen
+			    ?object-instance) ?costmap)))
   ;; (<- (solutions-not-in-collision ?desig ?obj-to-check ?pose)
   ;;   (format "gointo solution~%")
   ;;   (bullet-world ?world)
