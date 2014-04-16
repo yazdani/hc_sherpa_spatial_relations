@@ -16,4 +16,8 @@
 <include file="$(find sherpa_spatial_relations)/launch/busy_genius.launch"/>
 </group>
 
+
+<!-- <param name="cone_description" textfile="$(find sherpa_spatial_relations)/urdf/cone.urdf"/>  -->
+<!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param cone_description -urdf -model cone" /> -->
+
 </launch>

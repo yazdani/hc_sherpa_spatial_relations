@@ -31,7 +31,12 @@
   "List of current joint states as published by /joint_states.")
 (defvar *joint-states-subscriber* nil
   "Subscriber to /joint_states.")
-
+(defparameter *cone-pose* (cl-transforms:make-pose
+                           (cl-transforms:make-3d-vector 6.9 -0.22 3.85); 2.35 -0.27 3)
+                           (cl-transforms:axis-angle->quaternion
+                            (cl-transforms:make-3d-vector 0 1 0) 
+                            -1.85)))
+  
 (defun start-myros ()
   (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
   (roslisp-utilities:startup-ros :anonymous nil))
@@ -46,7 +51,29 @@
 ;; THE IMPORTANT OBJECTS INTO THE WORLD. THE FOLLOWING METHODS
 ;; ARE SHOWING US, HOW WE CAN START THE BULLET WORLD AND SPAWN
 ;; ROBOTS AND ENVIRONMENT SPECIFIC OBJECTS INTO THIS WOLD.
-
+(defun start-gazebo-with-robots ()
+  (simple-knowledge::clear-object-list)
+  (simple-knowledge::add-object-to-spawn
+   :name "rover"
+   :type 'rover
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 0 0 0)
+          (tf:make-quaternion 0 0 1 1))
+   :file (model-path "sherpa_rover.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "quad"
+   :type 'quad
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 0 0 0)
+          (tf:make-quaternion 0 0 1 1))
+   :file (model-path "quadrotor.urdf")))
+  
 (defun start-bullet-with-robots()
   (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOTS INTO WORLD")
   (setf *list* nil)
@@ -70,21 +97,70 @@
              )))))))
 
 (defun spawn-tree ()
-  (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
-  (force-ll (prolog `(and (bullet-world ?w)
-                          ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
-                          ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
-                          ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
-                          ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-                          (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
-                                          :mesh tree4 :mass 0.2 :color (0 0 0)))
-                          ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
-                          ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-                          ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
-                          ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
-                          ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
-                          ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
-                          ))))
+  (simple-knowledge::clear-object-list)
+  (simple-knowledge::add-object-to-spawn
+   :name "tree-4"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 6 0 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tree-4.urdf"))
+  (simple-knowledge:spawn-objects)
+  ;; (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
+  ;; (force-ll (prolog `(and (bullet-world ?w)
+  ;;                         ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
+  ;;                         ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+  ;;                         ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
+  ;;                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+  ;;                         (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
+  ;;                                         :mesh tree4 :mass 0.2 :color (0 0 0)))
+  ;;                         ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
+  ;;                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+  ;;                         ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
+  ;;                         ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
+  ;;                         ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
+  ;;                         ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+  ;;                         )))
+                    )
+
+(defun spawn-cone ()
+  (simple-knowledge::clear-object-list)
+  (simple-knowledge::add-object-to-spawn
+   :name "csssonssssssss1"
+   :type 'cone
+  ; :handels nil
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 8 3 0)
+          (tf:euler->quaternion  :ax () ))
+   :file (model-path "cone.urdf"))
+  (simple-knowledge:spawn-objects)
+  (spawn-into-bullet))
+
+(defun spawn-into-bullet ()
+  (let* ((x-vec (cl-transforms:x (cl-transforms:origin *cone-pose*)))
+         (y-vec (cl-transforms:y (cl-transforms:origin *cone-pose*)))
+         (z-vec (cl-transforms:z (cl-transforms:origin *cone-pose*)))
+         (x-quat (cl-transforms:x (cl-transforms:orientation *cone-pose*)))
+         (y-quat (cl-transforms:y (cl-transforms:orientation *cone-pose*)))
+         (z-quat (cl-transforms:z (cl-transforms:orientation *cone-pose*)))
+         (w-quat (cl-transforms:w (cl-transforms:orientation *cone-pose*))))
+         (force-ll 
+           (prolog `(and (bullet-world ?w)
+                         (assert (object ?w mesh conedds2 ((,x-vec ,y-vec ,z-vec )(,x-quat ,y-quat ,z-quat ,w-quat ))
+                         :mesh cone :mass 0.2 :color (0.5 0.5 1))))))))
+
+(defun model-path (name)
+  (physics-utils:parse-uri
+   (concatenate
+    'string
+    "package://sherpa_spatial_relations/urdf/"
+    name)))
 
 (defun spawn-object ()
 "we spawn the subject of interest"
@@ -92,6 +168,9 @@
    (prolog `(and (bullet-world ?w)
 		 (assert (object ?w mesh hat ((7 0 0)(0 0 0 1))
 				 :mesh hat :mass 0.2 :color (1 0 0)))))))
+
+
+
 
 
 (defun get-object-pose (obj-name)
@@ -169,6 +248,10 @@
   (let* ((x-val (+ 1 (get-joint-value-bullet "right_shoulder_joint_x"))) ;;move 2 m
          (y-val (get-joint-value-bullet "right_shoulder_joint_y"))
          (z-val (get-joint-value-bullet "right_shoulder_joint_z"))
+         (btr::*costmap-z* 0.6)
+         (btr::*costmap-tilt* (cl-transforms:axis-angle->quaternion
+                         (cl-transforms:make-3d-vector 0 1 0)
+                         -0.25))   
          ;; (angle (get-link-angle-bullet "name-of-link"))
          (transform (cl-transforms:make-pose (cl-transforms:make-3d-vector x-val y-val z-val)
                                              (cl-transforms:make-quaternion 0 0 0 1)))
@@ -178,7 +261,7 @@
          (costmap-pose (reference desig)))
     (format t "costmap-pose is: ~a~%" costmap-pose)
     (format t "location is: ~a~%" desig)
-    
+    (format t "costmap-z: ~a~%" btr::*costmap-z*)
     costmap-pose))
 
 ;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;

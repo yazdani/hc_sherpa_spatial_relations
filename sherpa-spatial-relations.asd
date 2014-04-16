@@ -36,29 +36,33 @@
                roslisp
                cram-pr2-knowledge
                pr2-manipulation-knowledge
-;;               cram-plan-library
-;;               pr2-manipulation-process-module
+               simple-knowledge
+               ;; cram-gazebo-utilities
+               ;;               cram-plan-library
+               ;;               pr2-manipulation-process-module
                cram-environment-representation
-;;               object-location-designators
-;;               cram-plan-knowledge
+               ;;               object-location-designators
+               ;;               cram-plan-knowledge
                projection-process-modules
- ;;              simple-knowledge
+               cram-gazebo-utilities
+               ;;              simple-knowledge
                bullet-reasoning-designators
                control_msgs-msg
-	       ;; geometry_msgs-msg
-	       ;; household_objects_database_msgs-msg
-	       ;; household_objects_database_msgs-srv
+               geometry_msgs-msg
+               trajectory_msgs-msg
+               household_objects_database_msgs-msg
+               household_objects_database_msgs-srv
                actionlib)
- :components 
- ((:module "src"
-	   :components
-	   ((:file "package")
-	    (:file "cost-functions" :depends-on ("package"))
-	    (:file "prolog" :depends-on ("package" "cost-functions"))
-	    (:file "costmap-knowledge" :depends-on("package"))
-	    (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge" "environment-objects" "pointing-gesture" "calculations"))
-	    (:file "environment-objects" :depends-on("package")) 
-	     (:file "pointing-gesture" :depends-on("package"))
+  :components 
+  ((:module "src"
+    :components
+    ((:file "package")
+     (:file "cost-functions" :depends-on ("package"))
+     (:file "prolog" :depends-on ("package" "cost-functions"))
+     (:file "costmap-knowledge" :depends-on("package"))
+     (:file "build-test-world" :depends-on("package" "prolog" "costmap-knowledge" "environment-objects" "pointing-gesture" "calculations"))
+     (:file "environment-objects" :depends-on("package")) 
+     (:file "pointing-gesture" :depends-on("package"))
 	   (:file "calculations" :depends-on("package"))  ))))
 ;;	    (:file "human-specific-objects" :depends-on("package"))
 ;;      (:file "designator-integration" :depends-on("package"))
