@@ -21,4 +21,7 @@
     <gazebo>
      <static>true</static>
    </gazebo>
+   <gazebo reference="body">
+    <material>Gazebo/OrangeTransparent</material>
+  </gazebo>
 </robot>

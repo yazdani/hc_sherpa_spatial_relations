@@ -35,6 +35,16 @@
 ;;
 ;;functions for calculating the links in the world
 ;;
+
+;; (defun genius-pose-to-right-hand-length-gazebo ()
+;; (let* ((gen-pose (cram-gazebo-utilities::get-model-pose 'busy_genius))
+;;        (
+       
+
+
+;; (right_foot_x (get-joint-value "right_foot_
+;; )
+
 (defun right-shoulder-to-right-upper-arm-length-gazebo ()
   (let* ((lower_arm_x (get-joint-value "right_upper_arm_joint_x"))
          (lower_arm_y (get-joint-value "right_upper_arm_joint_y"))

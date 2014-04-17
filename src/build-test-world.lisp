@@ -109,38 +109,47 @@
           (tf:make-quaternion 0 0 0 1))
    :file (model-path "tree-4.urdf"))
   (simple-knowledge:spawn-objects)
-  ;; (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
-  ;; (force-ll (prolog `(and (bullet-world ?w)
-  ;;                         ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
-  ;;                         ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
-  ;;                         ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
-  ;;                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-  ;;                         (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
-  ;;                                         :mesh tree4 :mass 0.2 :color (0 0 0)))
-  ;;                         ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
-  ;;                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-  ;;                         ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
-  ;;                         ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
-  ;;                         ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
-  ;;                         ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
-  ;;                         )))
-                    )
+  (spawn-tree-bullet))
+
+(defun spawn-tree-bullet ()
+(roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
+(force-ll (prolog `(and (bullet-world ?w)
+                        ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
+                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
+                                        :mesh tree4 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
+                        ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
+                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        ))))
+
+(defun init-models ()
+(cram-gazebo-utilities::init-cram-gazebo-utilities))
+
+
+
 
 (defun spawn-cone ()
-  (simple-knowledge::clear-object-list)
-  (simple-knowledge::add-object-to-spawn
-   :name "csssonssssssss1"
-   :type 'cone
-  ; :handels nil
-   :collision-parts nil
-   :pose (tf:make-pose-stamped
-          "/map"
-          0.0
-          (tf:make-3d-vector 8 3 0)
-          (tf:euler->quaternion  :ax () ))
-   :file (model-path "cone.urdf"))
-  (simple-knowledge:spawn-objects)
-  (spawn-into-bullet))
+  (let ((y-val (get-joint-value "right_foot_joint_y")))
+    (simple-knowledge::clear-object-list)
+    (simple-knowledge::add-object-to-spawn
+     :name "c2scdsdddsssssdsddss"
+     :type 'cone
+                                        ; :handels nil
+     :collision-parts nil
+     :pose (tf:make-pose-stamped
+            "/map"
+            0.0
+            (tf:make-3d-vector 7.25 (- (- y-val) 0.08) 0.95) ;;TODO
+            (tf:euler->quaternion  :ay (- (/ pi 2)) ))
+     :file (model-path "cone.urdf"))
+    (simple-knowledge:spawn-objects)
+    (spawn-into-bullet)))
 
 (defun spawn-into-bullet ()
   (let* ((x-vec (cl-transforms:x (cl-transforms:origin *cone-pose*)))
