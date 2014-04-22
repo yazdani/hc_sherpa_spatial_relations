@@ -734,6 +734,7 @@
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
     </inertial>
   </link>
+
   <link name="right_hand_z">
     <inertial>
       <mass value="1"/>
@@ -754,6 +755,7 @@
       </geometry>
     </collision>
   </link>
+
   <joint name="right_shoulder_joint_x" type="revolute">
     <parent link="neck_y"/>
     <child link="right_shoulder_x"/>
@@ -938,6 +940,42 @@
     <dynamics damping="0.7"/>
     <limit effort="100" lower="-2" upper="2" velocity="10.0"/>
   </joint>
+
+
+ <include filename="$(find pr2_description)/urdf/sensors/hokuyo_lx30_laser.urdf.xacro" />
+  <xacro:hokuyo_lx30_laser_v0 name="hand_laser" parent="right_hand_joint_y" ros_topic="side_scan"
+                              update_rate="20" min_angle="-1.57" max_angle="1.57" >
+      <origin xyz="0 -.220 0.200" rpy="0 0 0" />
+  </xacro:hokuyo_lx30_laser_v0>
+
+  <joint name="side_laser_box_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="hand_laser_link" />
+    <child link="hand_laser_box_link"/>
+  </joint>
+
+  <link name="hand_laser_box_link">
+    <inertial>
+      <mass value="0.01" />
+      <origin xyz="0 0 0" />
+      <inertia ixx="0.001"  ixy="0.0"  ixz="0.0"
+               iyy="0.001"  iyz="0.0"
+               izz="0.001" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.1" />
+      </geometry>
+    </collision>
+  </link>
+
   <transmission name="trans_right_hand_y">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="right_hand_joint_y"/>

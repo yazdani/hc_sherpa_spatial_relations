@@ -131,25 +131,26 @@
 (defun init-models ()
 (cram-gazebo-utilities::init-cram-gazebo-utilities))
 
-
-
-
 (defun spawn-cone ()
-  (let ((y-val (get-joint-value "right_foot_joint_y")))
+  (spawn-into-bullet)
+  (let* ((x-hand (get-joint-value "right_hand_joint_x"))
+       ;  (arm-len (right-shoulder-to-right-hand-length-gazebo))
+        (x-box-len (x-size-object 'cone-1))
+         (y-box-len (/ (y-size-object 'cone-1) 2))
+         (len (+ x-box-len 0.43)))
     (simple-knowledge::clear-object-list)
     (simple-knowledge::add-object-to-spawn
-     :name "c2scdsdddsssssdsddss"
+     :name "cone-1"
      :type 'cone
-                                        ; :handels nil
      :collision-parts nil
      :pose (tf:make-pose-stamped
             "/map"
             0.0
-            (tf:make-3d-vector 7.25 (- (- y-val) 0.08) 0.95) ;;TODO
+            (tf:make-3d-vector len x-hand y-box-len) ;;TODO
             (tf:euler->quaternion  :ay (- (/ pi 2)) ))
      :file (model-path "cone.urdf"))
-    (simple-knowledge:spawn-objects)
-    (spawn-into-bullet)))
+    (simple-knowledge:spawn-objects)))
+   ; (spawn-into-bullet)))
 
 (defun spawn-into-bullet ()
   (let* ((x-vec (cl-transforms:x (cl-transforms:origin *cone-pose*)))
@@ -161,7 +162,7 @@
          (w-quat (cl-transforms:w (cl-transforms:orientation *cone-pose*))))
          (force-ll 
            (prolog `(and (bullet-world ?w)
-                         (assert (object ?w mesh conedds2 ((,x-vec ,y-vec ,z-vec )(,x-quat ,y-quat ,z-quat ,w-quat ))
+                         (assert (object ?w mesh cone-1 ((,x-vec ,y-vec ,z-vec )(,x-quat ,y-quat ,z-quat ,w-quat ))
                          :mesh cone :mass 0.2 :color (0.5 0.5 1))))))))
 
 (defun model-path (name)
@@ -251,6 +252,12 @@
 ;; CREATING THE COSTMAP AND GENERATING SAMPLES FOR THE ROBOT 
 ;; WHERE TO MOVE AND TO NAVIGATE. FOR THE HUMAN WE WILL
 ;; RESTRICT THE AREA OF THE COSTMAP WITH CONDITIONS.
+
+
+(defun create-costmap-with-obstacles-around (name)
+  (let* ((transform (get-object-pose name))
+         (desig (make-designator 'desig-props:location `((go-to ,transform)))))
+    (reference desig)))
 
 (defun create-cylinder-from-genius-arm ()
   ;;take the shoulder values for positioning;;

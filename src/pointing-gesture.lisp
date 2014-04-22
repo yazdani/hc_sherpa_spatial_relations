@@ -33,14 +33,13 @@
 (defvar *joint-states-subscriber* nil
   "Subscriber to /joint_states.")
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;BULLET;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun pointing-into-bullet ()
  (crs:prolog
  `(assert (btr:joint-state ?w genius (( "right_shoulder_joint_x" 0.06) ;;0.1
                                      ( "right_shoulder_joint_y" -0.25)  ;;0.0 0.40
-                                     ( "right_shoulder_joint_z" 0.96)  ;;0.6 0.500
+                                     ( "right_shoulder_joint_z" 1.2)  ;;0.6 0.500
                                      ( "left_upper_arm_joint_x" 0.1)
                                      ( "left_upper_arm_joint_y" 3.0)
                                      ( "left_upper_arm_joint_z" -0.5))))))
@@ -59,12 +58,12 @@
                            "sensor_msgs/JointState"
                            #'joint-states-cb)))
 
-(defun get-joint-value (name)
+(defun get-joint-value (str-name)
   (let* ((joint-states (sherpa-joint-states))
          (joint-state
-           (nth (position name joint-states
-                          :test (lambda (name state)
-                                  (equal name (car state))))
+           (nth (position str-name joint-states
+                          :test (lambda (str-name state)
+                                  (equal str-name (car state))))
               joint-states)))
     (cdr joint-state)))
 
@@ -76,6 +75,7 @@
            for n = (elt name i)
            for p = (elt position i)
            collect (cons n p)))))
+
 
 (defun sherpa-joint-states ()
   *joint-states*)
@@ -90,7 +90,7 @@
                     points (vector
                             (roslisp:make-message
                              "trajectory_msgs/JointTrajectoryPoint"
-                             positions #(1.5 0.0 0.0)
+                             positions #(1.5 0.0 -0.1)
                              velocities #(0 0 0)
                              accelerations #(0)
                              time_from_start 2.0

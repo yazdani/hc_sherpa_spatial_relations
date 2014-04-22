@@ -32,7 +32,8 @@
                              (tree2 "package://sherpa_spatial_relations/meshes/tree-2.stl" nil)
                              (tree3 "package://sherpa_spatial_relations/meshes/tree-3.stl" nil)
                              (tree4 "package://sherpa_spatial_relations/meshes/tree-4.stl" nil)
-                             (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)))
+                             (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)
+                             (cone "package://sherpa_spatial_relations/meshes/cone.stl" nil)))
 
 
                           ;;   (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)
@@ -42,6 +43,9 @@
 
  (defclass human-specific-object (object)
    ((types :reader human-specific-object-types :initarg :types)))
+
+(defclass objectshape-object (object)
+   ((types :reader objectshape-object-types :initarg :types)))
 
 ;;(defgeneric environment-object-dimensions (object)
 ;;  (:method ((object environment-object))
@@ -74,6 +78,15 @@
     :add add-to-world
     :types types))
 
+(defun make-objectshape-object (world name types &optional bodies (add-to-world t))
+(format t "into objectshape~%")
+  (make-instance 'objectshape-object
+    :name name
+    :world world
+    :rigid-bodies bodies
+    :add add-to-world
+    :types types))
+
 (defun make-human-specific-object (world name types &optional bodies (add-to-world t))
  (make-instance 'human-specific-object
     :name name
@@ -100,8 +113,29 @@
                        (physics-utils:3d-model mesh))
                      scale)))
  ;;ToDO change the hard-cording stuff
-   (cond ((eq name `hat)
-          (make-human-specific-object world name (or types (list mesh))
+    (cond ((eq name `hat)
+           (make-human-specific-object world name (or types (list mesh))
+                                       (list
+                                        (make-instance 'rigid-body
+                                                       :name name :mass mass :pose (ensure-pose pose)
+                                                       :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
+                                                                                       :points (physics-utils:3d-model-vertices mesh-model)
+                                                                                       :faces (physics-utils:3d-model-faces mesh-model)
+                                                                                       :color color
+                                                                                       :disable-face-culling disable-face-culling))))
+            )
+          ((eq name `cone)
+            (make-objectshape-object world name (or types (list mesh))
+                                       (list
+                                        (make-instance 'rigid-body
+                                                       :name name :mass mass :pose (ensure-pose pose)
+                                                       :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
+                                                                                       :points (physics-utils:3d-model-vertices mesh-model)
+                                                                                       :faces (physics-utils:3d-model-faces mesh-model)
+                                                                                       :color color
+                                                                                       :disable-face-culling disable-face-culling))))
+           (format t "hallo cone~%"))
+          (t (make-environment-object world name (or types (list mesh))
                                       (list
                                        (make-instance 'rigid-body
                                                       :name name :mass mass :pose (ensure-pose pose)
@@ -109,13 +143,4 @@
                                                                                       :points (physics-utils:3d-model-vertices mesh-model)
                                                                                       :faces (physics-utils:3d-model-faces mesh-model)
                                                                                       :color color
-                                                                                      :disable-face-culling disable-face-culling)))))
-         (t (make-environment-object world name (or types (list mesh))
-                                     (list
-                                      (make-instance 'rigid-body
-                                                     :name name :mass mass :pose (ensure-pose pose)
-                                                     :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
-                                                                                     :points (physics-utils:3d-model-vertices mesh-model)
-                                                                                     :faces (physics-utils:3d-model-faces mesh-model)
-                                                                                     :color color
-                                                                                     :disable-face-culling disable-face-culling))))))))
+                                                                                      :disable-face-culling disable-face-culling))))))))

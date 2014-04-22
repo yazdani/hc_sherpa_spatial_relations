@@ -1,0 +1,8 @@
+<launch>
+
+<node name="cluster_bounding_box_finder" pkg="object_manipulator" cwd="node"
+    type="cluster_bounding_box_finder_server.py" output="screen" respawn="false" machine="c2">
+        <param name="z_up_frame" value="/base_link" />
+</node>
+
+</launch>

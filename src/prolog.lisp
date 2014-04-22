@@ -48,26 +48,33 @@
   (<- (robot genius)))
 
 (def-fact-group spatial-relations-costmap (desig-costmap)
-
+  
   (<- (desig-costmap ?designator ?costmap)
-    (format "hi1 ~a~%" ?costmap)
     (desig-prop ?designator (go-to ?position))
-;   (desig-prop ?designator (far-from ?coll-obj))
-    ;;   (desig-prop ?designator (far-from ?obj))
-;    (costmap ?costmap)
-   (format "hi2~%")
- ;   (costmap-add-function sherpa-spatial-generator
-  ;                        (make-spatial-relation-cost-function ?position :X > 0.99)
-   ;                       ?costmap)
-    ;; (debug-costmap ?costmap 0.5)
+                                        ;  (desig-prop ?designator (far-from ?coll-obj))
+    (costmap ?costmap)
+    (costmap-add-function sherpa-spatial-generator
+                          (make-spatial-relation-cost-function ?position :Y < 0.0)
+                          ?costmap)
+    ;;(0.99)
+    (costmap-add-height-generator (make-constant-height-function
+                                   3.0) 
+                                  ?costmap)
+    (instance-of range-generator ?range-generator-id-1)
+    (costmap-add-function ?range-generator-id-1
+                          (make-range-cost-function ?position 1.5)
+                         ?costmap)
+    (instance-of gaussian-generator ?gaussian-generator-id)
+    (costmap-add-function ?gaussian-generator-id
+                          (make-location-cost-function ?position 1.0)
+                          ?costmap)
+    ))
+  ;; (debug-costmap ?costmap 0.5)
     ;; (debug-costmap ?costmap 0.4)
     ;; (costmap-add-orientation-generator (make-orientation-function 
     ;;                                     ?location)
     ;;                                    ?costmap)
-    ;; (costmap-add-height-generator (make-constant-height-function
-    ;;                                3.0) 
-    ;;                               costmap)
-    ;; (costmap-add-function sherpa-angle-generator
+  ;; (costmap-add-function sherpa-angle-generator
     ;;                       (make-costmap-with-angle-function ?location)
     ;;                       ?costmap)))
     ;; (costmap-add-height-generator (make-constant-height-function
@@ -76,33 +83,33 @@
     ;; (costmap-add-orientation-generator (add-costmap-function-object ?costmap
     ;;          )
     ;;                                    ?costmap)
-   ; (instance-of range-generator ?range-generator-id-1)
-   ; (costmap-add-function ?range-generator-id-1
-    ;                      (make-range-cost-function ?position 7.5)
-     ;                     ?costmap)
- ;   (format "costmap~a~%" ?costmap)
+    ;; (instance-of range-generator ?range-generator-id-1)
+    ;; (costmap-add-function ?range-generator-id-1
+    ;;                      (make-range-cost-function ?position 7.5)
+    ;;                     ?costmap)
+    ;;   (format "costmap~a~%" ?costmap)
 
-;    (costmap-add-height-generator (make-constant-height-function
- ;                                  3.0)
-  ;                                ?costmap))
-  
-  ;; (setf  btr::*costmap-z* 0.6)
-  ;; (setf  btr::*costmap-tilt* 
-  ;;        (cl-transforms:axis-angle->quaternion
-  ;;         (cl-transforms:make-3d-vector 0 1 0)
-  ;;         -0.25))
+    ;;    (costmap-add-height-generator (make-constant-height-function
+    ;;                                  3.0)
+    ;;                                ?costmap))
+  ;  (symbol-value  btr::*costmap-tilt* 
+   ;        (cl-transforms:axis-angle->quaternion
+   ;         (cl-transforms:make-3d-vector 0 1 0)
+   ;         -0.25))   
+    ;; (desig-prop ?designator (far-from ?object))
+    ;; (bullet-world ?world)
+    ;; (once
+    ;;  (or (cram-environment-representation:object-designator-name
+    ;;       ?object ?object-instance-name)
+    ;;      (== ?object ?object-instance-name)))
+    ;; (%object ?world ?object-instance-name ?object-instance)
+    ;; (costmap ?costmap)
+    ;; (costmap-add-function
+    ;;  on-the-bounding-box (make-object-bounding-box-costmap-gen
+    ;;                       ?object-instance) ?costmap)
+    ;; (setf location-costmap::*cost* 0.3)
+ 
 
-      (desig-prop ?designator (far-from ?object))
-      (bullet-world ?world)
-      (once
-       (or (cram-environment-representation:object-designator-name
-	    ?object ?object-instance-name)
-	   (== ?object ?object-instance-name)))
-      (%object ?world ?object-instance-name ?object-instance)
-      (costmap ?costmap)
-      (costmap-add-function
-       on-the-bounding-box (make-object-bounding-box-costmap-gen
-			    ?object-instance) ?costmap)))
   ;; (<- (solutions-not-in-collision ?desig ?obj-to-check ?pose)
   ;;   (format "gointo solution~%")
   ;;   (bullet-world ?world)
