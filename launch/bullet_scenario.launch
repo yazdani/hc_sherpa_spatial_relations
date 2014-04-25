@@ -14,6 +14,14 @@
 
 <group ns="genius">
 <include file="$(find sherpa_spatial_relations)/launch/busy_genius.launch"/>
+ <node type="laser_scan_assembler" pkg="laser_assembler"
+        name="my_assembler">
+    <remap from="scan" to="handscan"/>
+    <param name="max_scans" type="int" value="400" />
+    <param name="fixed_frame" type="string" value="laser_link" />
+  </node>
+    
+    <node name="periodic_snapshoter" pkg="sherpa_utils"  type="periodic_snapshoter" respawn="false" output="screen" />
 </group>
 
 

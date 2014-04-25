@@ -8,13 +8,13 @@
         <mesh filename="package://sherpa_spatial_relations/meshes/tree-4.dae"/>
         </geometry>
      </visual> 
-<!--     
+   
      <collision>
        <geometry>
-	 <mesh filename="package://sherpa_spatial_relations/models/tree-6.stl"/>
+	 <mesh filename="package://sherpa_spatial_relations/models/tree-4.stl"/>
        </geometry>
      </collision>
--->
+
 <!-- <collision>-->
       <!--<origin xyz="-4 -3 0"/> -->     
 <!--       <geometry>
