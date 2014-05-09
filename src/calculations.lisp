@@ -224,16 +224,16 @@
 
 (defun z-size-object (obj-name)
   (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
-        (dimension (cl-bullet:bounding-box-dimensions size)))
+         (dimension (cl-bullet:bounding-box-dimensions size)))
     (cl-transforms:z dimension)))
 
 (defun y-size-object (obj-name)
   (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
-        (dimension (cl-bullet:bounding-box-dimensions size)))
+         (dimension (cl-bullet:bounding-box-dimensions size)))
     (cl-transforms:y dimension)))
 
 (defun x-size-object (obj-name)
   (let* ((size (btr:aabb (object *current-bullet-world* obj-name)))
-        (dimension (cl-bullet:bounding-box-dimensions size)))
+         (dimension (cl-bullet:bounding-box-dimensions size)))
     (cl-transforms:x dimension)))
 

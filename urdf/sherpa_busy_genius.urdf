@@ -865,8 +865,8 @@
   <collision>
     <origin xyz="0.03 -0.05 0.0" rpy="1.5 0 0"/>
     <geometry>
-  <mesh filename="package://hector_sensors_description/meshes/kinect_camera/kinect_camera_simple.dae"/>
-      <!-- <mesh filename="package://sherpa_spatial_relations/meshes/hokuyo.dae"/> -->
+  <!-- <mesh filename="package://hector_sensors_description/meshes/kinect_camera/kinect_camera_simple.dae"/> -->
+      <mesh filename="package://sherpa_spatial_relations/meshes/hokuyo.dae"/>
     </geometry>
   </collision>
  </link>

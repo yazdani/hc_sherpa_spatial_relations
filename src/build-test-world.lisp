@@ -99,6 +99,36 @@
 (defun spawn-tree ()
   (simple-knowledge::clear-object-list)
   (simple-knowledge::add-object-to-spawn
+   :name "tree-3"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 5 2 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tree-3.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "tree-2"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 6 -1 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tree-2.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "tree-1"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 5.5 0 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tree-1.urdf"))
+ (simple-knowledge::add-object-to-spawn
    :name "tree-4"
    :type 'tree
    :collision-parts nil
@@ -109,34 +139,35 @@
           (tf:make-quaternion 0 0 0 1))
    :file (model-path "tree-4.urdf"))
   (simple-knowledge:spawn-objects)
-  (spawn-tree-bullet))
+  ;(spawn-tree-bullet)
+  )
 
 (defun spawn-tree-bullet ()
 (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
-(force-ll (prolog `(and (bullet-world ?w)
+(prolog `(and (bullet-world ?w)
                         ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
                         ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
                         ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-3 ((6.5 1 1)(0 0 0 1))
-                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-3 ((6.5 1 1)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
                         (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
                                         :mesh tree4 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-8 ((5.5 1 1)(0 0 0 1))
-                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-8 ((5.5 1 1)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
                         ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
                         ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
                         ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
                         ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
                         ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
-                        ))))
+                        )))
 
 (defun init-models ()
 (cram-gazebo-utilities::init-cram-gazebo-utilities))
 
 (defun spawn-cone ()
-  (spawn-into-bullet)
+;  (spawn-into-bullet)
   (let* ((x-hand (get-joint-value "right_hand_joint_x"))
        ;  (arm-len (right-shoulder-to-right-hand-length-gazebo))
         (x-box-len (x-size-object 'cone-1))
@@ -263,26 +294,26 @@
          (desig (make-designator 'desig-props:location `((go-to ,transform)))))
     (reference desig)))
 
-(defun create-cylinder-from-genius-arm ()
-  ;;take the shoulder values for positioning;;
-  (let* ((x-val (+ 1 (get-joint-value-bullet "right_shoulder_joint_x"))) ;;move 2 m
-         (y-val (get-joint-value-bullet "right_shoulder_joint_y"))
-         (z-val (get-joint-value-bullet "right_shoulder_joint_z"))
-         (btr::*costmap-z* 0.6)
-         (btr::*costmap-tilt* (cl-transforms:axis-angle->quaternion
-                         (cl-transforms:make-3d-vector 0 1 0)
-                         -0.25))   
-         ;; (angle (get-link-angle-bullet "name-of-link"))
-         (transform (cl-transforms:make-pose (cl-transforms:make-3d-vector x-val y-val z-val)
-                                             (cl-transforms:make-quaternion 0 0 0 1)))
-                                        ;  (cl-transforms:make-angle->axis
-         (desig (make-designator 'desig-props:location `((go-to ,transform)
-                                                         (far-from tree-4))))
-         (costmap-pose (reference desig)))
-    (format t "costmap-pose is: ~a~%" costmap-pose)
-    (format t "location is: ~a~%" desig)
-    (format t "costmap-z: ~a~%" btr::*costmap-z*)
-    costmap-pose))
+;; (defun create-cylinder-from-genius-arm ()
+;;   ;;take the shoulder values for positioning;;
+;;   (let* ((x-val (+ 1 (get-joint-value-bullet "right_shoulder_joint_x"))) ;;move 2 m
+;;          (y-val (get-joint-value-bullet "right_shoulder_joint_y"))
+;;          (z-val (get-joint-value-bullet "right_shoulder_joint_z"))
+;;          (btr::*costmap-z* 0.6)
+;;          (btr::*costmap-tilt* (cl-transforms:axis-angle->quaternion
+;;                          (cl-transforms:make-3d-vector 0 1 0)
+;;                          -0.25))   
+;;          ;; (angle (get-link-angle-bullet "name-of-link"))
+;;          (transform (cl-transforms:make-pose (cl-transforms:make-3d-vector x-val y-val z-val)
+;;                                              (cl-transforms:make-quaternion 0 0 0 1)))
+;;                                         ;  (cl-transforms:make-angle->axis
+;;          (desig (make-designator 'desig-props:location `((go-to ,transform))))
+;;                                                          ;; (far-from tree-4))))
+;;          (costmap-pose (reference desig)))
+;;     (format t "costmap-pose is: ~a~%" costmap-pose)
+;;     (format t "location is: ~a~%" desig)
+;;     (format t "costmap-z: ~a~%" btr::*costmap-z*)
+;;     costmap-pose))
 
 ;;;;;;;;;;;;;;CREATE DESIGNATORS;;;;;;;;;;;;;;;;;;;;;;
 (defun make-obj-desig-close-to-tree ()

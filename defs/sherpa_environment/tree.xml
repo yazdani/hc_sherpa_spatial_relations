@@ -1,12 +1,13 @@
+<?xml version="1.0"?>
 <robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
        xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
        xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller">
 
 
    
-<link name="base_link">
+<link name="tree_link1">
      <visual>
-       <!-- <origin xyz="-4 -3 0"/> -->
+       <origin xyz="6 0 0" rpy="0 0 0" />
         <geometry>
         <mesh filename="package://sherpa_spatial_relations/meshes/tree-1.stl"/>
         </geometry>
@@ -17,10 +18,52 @@
        </geometry>
      </collision>
 </link>     
+   
+  
+   
+<link name="tree_link2">
+     <visual>
+       <origin xyz="5.5 -1 0" rpy="0 0 0" />
+        <geometry>
+        <mesh filename="package://sherpa_spatial_relations/meshes/tree-2.stl"/>
+        </geometry>
+     </visual> 
+     <collision>
+       <geometry>
+	 <mesh filename="package://sherpa_spatial_relations/meshes/tree-2.stl"/>
+       </geometry>
+     </collision>
+</link>     
      
-
-     <gazebo>
-     <static>true</static>
-   </gazebo>
+   
+<link name="tree_link3">
+     <visual>
+       <origin xyz="6.5 1 0" rpy="0 0 0" />
+        <geometry>
+        <mesh filename="package://sherpa_spatial_relations/meshes/tree-3.stl"/>
+        </geometry>
+     </visual> 
+     <collision>
+       <geometry>
+	 <mesh filename="package://sherpa_spatial_relations/meshes/tree-3.stl"/>
+       </geometry>
+     </collision>
+</link>     
+     
+   
+<link name="tree_link1">
+     <visual>
+       <origin xyz="5 -2 0" rpy="0 0 0" />
+        <geometry>
+        <mesh filename="package://sherpa_spatial_relations/meshes/tree-4.stl"/>
+        </geometry>
+     </visual> 
+     <collision>
+       <geometry>
+	 <mesh filename="package://sherpa_spatial_relations/meshes/tree-4.stl"/>
+       </geometry>
+     </collision>
+</link>     
+     
 
 </robot>

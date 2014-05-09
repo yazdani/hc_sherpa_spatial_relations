@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find sherpa_spatial_relations)/launch/map.launch" />
+  <!-- <include file="$(find sherpa_spatial_relations)/launch/trees.launch" /> -->
+
+  <!-- <node name="json_prolog" pkg="rosprolog" type="run_with_prolog_env" args="sherpa_spatial_relations $(find json_prolog)/bin/json_prolog" /> -->
+
+</launch>

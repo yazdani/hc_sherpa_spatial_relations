@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot>
+
+  <material name="White">
+    <color rgba="0.75 0.75 0.7 1.0"/>
+  </material>
+
+  <material name="DarkGray">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+
+  <material name="LightGray">
+    <color rgba="0.7 0.7 0.7 1.0"/>
+  </material>
+
+  <material name="WallWhite">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+</robot>

@@ -1,0 +1,41 @@
+<robot name="sherpa_rmax">
+    <!-- 
+    TODO
+    Correct the gripper
+    FIX Collision FOR Gripper?
+    seperate BOX
+    -->
+  <link name="alps_link">
+    <!--MAIN_BODY-->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+	<mesh filename="package://sherpa_map_description/meshes/alp_textured_scaled.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sherpa_map_description/meshes/alp_textured_scaled.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 1" rpy="0 0 0"/>
+      <mass value="1"/>
+      <inertia 
+        ixx="1.0" ixy="0.0" ixz="0.0" 
+        iyy="1.0" iyz="0.0" 
+        izz="1.0"/>
+    </inertial>
+  </link>
+  
+  
+  <gazebo>
+    <static>true</static>
+    <plugin name="alps_dummy_control" filename="libsherpa_gazebo_dummy_plugin.so">
+ 
+    </plugin>
+  </gazebo>
+  
+  
+</robot>

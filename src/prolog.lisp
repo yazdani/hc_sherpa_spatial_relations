@@ -31,7 +31,7 @@
 (defmethod costmap-generator-name->score ((name (eql 'sherpa-spatial-generator))) 5)
 (defmethod costmap-generator-name->score ((name (eql 'support-object))) 3)
 (defmethod costmap-generator-name->score ((name (eql 'sherpa-angle-generator))) 4)
-
+(defmethod costmap-generator-name->score ((name (eql 'collisions))) 10)
 (defmethod costmap-generator-name->score ((name (eql 'visibility-distribution)))
   9)
 (defmethod costmap-generator-name->score ((name (eql 'on-the-bounding-box)))
@@ -51,24 +51,59 @@
   
   (<- (desig-costmap ?designator ?costmap)
     (desig-prop ?designator (go-to ?position))
-                                        ;  (desig-prop ?designator (far-from ?coll-obj))
     (costmap ?costmap)
     (costmap-add-function sherpa-spatial-generator
-                          (make-spatial-relation-cost-function ?position :Y < 0.0)
+                          (make-spatial-relation-cost-function ?position :Y  < 0.0)
                           ?costmap)
-    ;;(0.99)
     (costmap-add-height-generator (make-constant-height-function
                                    3.0) 
                                   ?costmap)
     (instance-of range-generator ?range-generator-id-1)
     (costmap-add-function ?range-generator-id-1
-                          (make-range-cost-function ?position 1.5)
+                          (make-range-cost-function ?position 2.5)
                          ?costmap)
     (instance-of gaussian-generator ?gaussian-generator-id)
     (costmap-add-function ?gaussian-generator-id
                           (make-location-cost-function ?position 1.0)
                           ?costmap)
-    ))
+    (findall ?obj (and
+                   (bullet-world ?world)
+                   (object ?world ?name)
+                   (%object ?world ?name ?obj)
+                   (lisp-type ?obj environment-object)
+                   (get-slot-value ?obj types ?types)
+                   (member ?type ?types)) ?objs)   
+    (costmap-add-function
+     collisions
+     (make-costmap-bbox-generator ?objs :invert t :padding -0.3)
+     ?costmap)))
+
+    ;; (collision-costmap-inverter ?designator 0.0 ?costmap))
+
+  ;; (<- (collision-costmap-inverter ?designator 0.0 ?costmap)
+  ;;   (bullet-world ?world)
+  ;;   (desig-prop ?designator (go-to ?position))
+  ;;      (costmap ?costmap)
+  ;;   (costmap-add-function sherpa-spatial-generator
+  ;;                         (make-spatial-relation-cost-function ?position :Y < 0.0)
+  ;;                         ?costmap)
+  ;;   (format "hi2~%")
+  ;;   (costmap ?costmap)
+    ;; (findall ?obj ;(and
+    ;;                (environment-object-type ?world ?name ?obj)
+    ;;                ;    (%object ?world ?name ?obj)) 
+    ;;                ?objs)
+  
+  
+  ;; (<- (environment-object-type ?world ?object-name ?object-type)
+  ;;   (bullet-world ?world)
+  ;;   (object ?world ?name)
+  ;;   (%object ?world ?name ?object-instance)
+  ;;   (lisp-type ?object-instance environment-object)
+  ;;   (get-slot-value ?object-instance types ?types)
+  ;;   (member ?type ?types)
+  ;;   )
+
   ;; (debug-costmap ?costmap 0.5)
     ;; (debug-costmap ?costmap 0.4)
     ;; (costmap-add-orientation-generator (make-orientation-function 

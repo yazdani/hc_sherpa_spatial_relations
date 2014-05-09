@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+<param name="map_description" command="$(find xacro)/xacro.py '$(find sherpa_spatial_relations)/map/sherpa_map.urdf.xml'"/>
+
+<node pkg="tf" type="static_transform_publisher" name="map_link_broadcaster" 
+    args="-3.45 -3.90 0 -3.141 0 0 /map /sherpa_link_link 200">
+  </node>
+
+  <node pkg="robot_state_chain_publisher" type="state_chain_publisher"
+    name="map_state_publisher" output="screen">
+    <param name="tf_prefix" value="/"/>
+    <param name="publish_frequency" value="2"/>
+    <remap from="robot_description" to="map_description" />
+  </node>
+</launch>
