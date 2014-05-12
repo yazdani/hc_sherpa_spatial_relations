@@ -41,7 +41,8 @@
   <depend package="geometry_msgs"/>
   <!-- <depend package="bullet_reasoning"/> -->
   <depend package="control_msgs"/>
-
+ <depend package="pcl_ros"/>
+ <depend package="pcl_conversions"/>
 </package>
 
 

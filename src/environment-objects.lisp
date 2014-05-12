@@ -32,6 +32,8 @@
                              (tree2 "package://sherpa_spatial_relations/meshes/tree-2.stl" nil)
                              (tree3 "package://sherpa_spatial_relations/meshes/tree-3.stl" nil)
                              (tree4 "package://sherpa_spatial_relations/meshes/tree-4.stl" nil)
+			     (Tent1 "package://sherpa_spatial_relations/meshes/Tent1.stl" nil)
+			     (Tent2 "package://sherpa_spatial_relations/meshes/Tent2.stl" nil)
                              (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)
                              (cone "package://sherpa_spatial_relations/meshes/cone.stl" nil)))
 
@@ -79,7 +81,6 @@
     :types types))
 
 (defun make-objectshape-object (world name types &optional bodies (add-to-world t))
-(format t "into objectshape~%")
   (make-instance 'objectshape-object
     :name name
     :world world

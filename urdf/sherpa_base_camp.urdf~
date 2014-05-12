@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+
+<robot name="sherpa_base_camp">
+  
+  <link name="tent1">
+    <!--MAIN_BODY-->
+    <visual>
+      <origin xyz="-9 0 1" rpy="0 0 0" />
+      <geometry>
+	<mesh filename="package://sherpa_spatial_relations/meshes/Tent1.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-9 0 1" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://sherpa_spatial_relations/meshes/Tent1.dae"/>
+      </geometry>
+    </collision>
+    <!-- <inertial> -->
+    <!--   <origin xyz="-9 0 1" rpy="0 0 0" /> -->
+    <!--   <mass value="100"/> -->
+    <!--   <inertia  -->
+    <!--     ixx="1.0" ixy="0.0" ixz="0.0"  -->
+    <!--     iyy="1.0" iyz="0.0"  -->
+    <!--     izz="1.0"/> -->
+    <!-- </inertial> -->
+    <!-- <visual> -->
+    <!--   <origin xyz="9 -8 1" rpy="0 0 2.00712" /> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://sherpa_base_camp_description/meshes/Tent2.dae"/> -->
+    <!--   </geometry> -->
+    <!-- </visual> -->
+    <!-- <collision> -->
+    <!--   <origin xyz="9 -8 1" rpy="0 0 2.00712" /> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://sherpa_base_camp_description/meshes/Tent2.dae"/> -->
+    <!--   </geometry> -->
+    <!-- </collision> -->
+    <!--inertial>
+      <origin xyz="9 -8 1" rpy="0 0 2.00712"/>
+      <mass value="100"/>
+      <inertia 
+        ixx="1.0" ixy="0.0" ixz="0.0" 
+        iyy="1.0" iyz="0.0" 
+        izz="1.0"/>
+    </inertial-->
+  </link>
+  
+  
+  
+  <!--gazebo reference="sherpa_base_camp">
+    
+    <plugin name="basecamp_ros_control" filename="libsherpa_gazebo_dummy_plugin.so">
+ 
+    </plugin>
+  </gazebo-->
+  <gazebo>
+      <static>true</static>
+  </gazebo>
+  
+</robot>

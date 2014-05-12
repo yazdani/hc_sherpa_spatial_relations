@@ -2,7 +2,9 @@
 <launch>
 
 <include file="$(find bullet_reasoning_demo)/launch/bullet_reasoning.launch"/>
-<!--<include file="$(find gazebo_ros)/launch/empty_world.launch"/>-->
+<!-- include file="$(find sherpa_spatial_relations)/launch/new_world.launch"/> -->
+<include file="$(find sherpa_spatial_relations)/launch/new_world.launch"/>
+
   <!-- <arg name="use_sim_time" default="true"/> -->
   <!-- <arg name="gui" default="true"/> -->
 
@@ -13,7 +15,7 @@
 
 
   <!-- start empty world -->
-  <!-- <node name="gazebo" pkg="gazebo_ros" type="gazebo" args="$(find alpine_scenario)/worlds/mesh.world" respawn="false" output="screen"/> -->
+  <!-- <node name="new_world" pkg="gazebo_ros" type="gazebo" args="$(find sherpa_spatial_relations)/worlds/mesh.world" respawn="false" output="screen"/> -->
 
 <group ns="quad">
 <include file="$(find sherpa_spatial_relations)/launch/flying_robot.launch"/>

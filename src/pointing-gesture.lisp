@@ -36,10 +36,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;BULLET;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun pointing-into-bullet ()
+ (roslisp:ros-info (sherpa-spatial-relations) "POINTING INTO BULLETWORLD")
  (crs:prolog
  `(assert (btr:joint-state ?w genius (( "right_shoulder_joint_x" 0.06) ;;0.1
                                      ( "right_shoulder_joint_y" -0.25)  ;;0.0 0.40
-                                     ( "right_shoulder_joint_z" 1.2)  ;;0.6 0.500
+                                     ( "right_shoulder_joint_z" 1.4)  ;;0.6 0.500
                                      ( "left_upper_arm_joint_x" 0.1)
                                      ( "left_upper_arm_joint_y" 3.0)
                                      ( "left_upper_arm_joint_z" -0.5))))))
@@ -120,6 +121,7 @@
     (roslisp:ros-info (sherpa-spatial-relations) "Finished"))
 
 (defun pointing-into-gazebo ()
+ (roslisp:ros-info (sherpa-spatial-relations) "POINTING INTO GAZEBO")
   (execute-right-arm-trajectory (default-position-to-trajectory))
   (start-myros))
 

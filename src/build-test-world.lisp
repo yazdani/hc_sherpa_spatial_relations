@@ -37,6 +37,17 @@
                             (cl-transforms:make-3d-vector 0 1 0) 
                             -1.85)))
   
+(defun start-scene ()
+(start-myros)
+(start-bullet-with-robots)
+(spawn-objects-into-world) 
+(spawn-tree-bullet)
+(spawn-camps-bullet)
+(pointing-into-gazebo)
+(pointing-into-bullet)
+(spawn-cone-into-gazebo)
+(create-costmap-with-obstacles-around 'tree-4)
+)
 (defun start-myros ()
   (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
   (roslisp-utilities:startup-ros :anonymous nil))
@@ -96,8 +107,18 @@
                (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
              )))))))
 
-(defun spawn-tree ()
+(defun spawn-objects-into-world ()
   (simple-knowledge::clear-object-list)
+  (simple-knowledge::add-object-to-spawn
+   :name "base-camp"
+   :type 'base-camp
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector -2 -2 -1)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "sherpa_base_camp.urdf"))
   (simple-knowledge::add-object-to-spawn
    :name "tree-3"
    :type 'tree
@@ -139,40 +160,48 @@
           (tf:make-quaternion 0 0 0 1))
    :file (model-path "tree-4.urdf"))
   (simple-knowledge:spawn-objects)
-  ;(spawn-tree-bullet)
-  )
+)
 
 (defun spawn-tree-bullet ()
 (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
 (prolog `(and (bullet-world ?w)
-                        ;; (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
-                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
-                        ;; (assert (object ?w mesh tree-3 ((9 -5 0)(0 0 0 1))
-                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        ;; (assert (object ?w mesh tree-3 ((6.5 1 1)(0 0 0 1))
-                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
+                                        :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-2 ((9 -5 0)(0 0 0 1))
+                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-3 ((6.5 1 1)(0 0 0 1))
+                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
                         (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
                                         :mesh tree4 :mass 0.2 :color (0 0 0)))
-                        ;; (assert (object ?w mesh tree-8 ((5.5 1 1)(0 0 0 1))
-                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        ;; (assert (object ?w mesh tree-8 ((6 1 0)(0 0 0 1))
-                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        ;; (assert (object ?w mesh tree-9 ((6.5 2 0)(0 0 0 1))
-                        ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
-                        ;; (assert (object ?w mesh tree-10 ((5.5 3 0)(0 0 0 1))
-                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-5 ((5.5 1 1)(0 0 0 1))
+                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-6 ((6 1 0)(0 0 0 1))
+                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-7 ((6.5 2 0)(0 0 0 1))
+                                        :mesh tree2 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-8 ((5.5 3 0)(0 0 0 1))
+                                        :mesh tree1 :mass 0.2 :color (0 0 0)))
                         )))
+
+(defun spawn-camps-bullet ()
+(roslisp:ros-info (sherpa-spatial-relations) "SPAWN CAMPS INTO WORLD")
+(prolog `(and (bullet-world ?w)
+              (assert (object ?w mesh Tent-1 ((-7 -2 0)(0 0 0 1))
+                              :mesh Tent1 :mass 0.2 :color (0 0 0)))
+              (assert (object ?w mesh Tent-2 ((7 -10 0)(0 0 1.5 1))
+                              :mesh Tent2 :mass 0.2 :color (0 0 0))))))
 
 (defun init-models ()
 (cram-gazebo-utilities::init-cram-gazebo-utilities))
 
-(defun spawn-cone ()
-;  (spawn-into-bullet)
+(defun spawn-cone-into-gazebo ()
+  (spawn-cone-into-bullet)
   (let* ((x-hand (get-joint-value "right_hand_joint_x"))
-       ;  (arm-len (right-shoulder-to-right-hand-length-gazebo))
-        (x-box-len (x-size-object 'cone-1))
-         (y-box-len (/ (y-size-object 'cone-1) 2))
-         (len (+ x-box-len 0.43)))
+         (x-box-len (x-size-object 'cone-1))
+        (y-box-len (/ (y-size-object 'cone-1) 2))
+        (len (+ x-box-len 0.43)))
+     ;   (arm-len (right-shoulder-to-right-hand-length-gazebo)))
+    (format t "hello~%")
     (simple-knowledge::clear-object-list)
     (simple-knowledge::add-object-to-spawn
      :name "cone-1"
@@ -182,15 +211,15 @@
             "/map"
             0.0
             (tf:make-3d-vector len x-hand y-box-len) ;;TODO
-            (tf:euler->quaternion  :ay (- (/ pi 2)) ))
+            (tf:euler->quaternion  :ay  (-(/ pi 2))) )
      :file (model-path "cone.urdf"))
     (simple-knowledge:spawn-objects)))
    ; (spawn-into-bullet)))
 
-(defun spawn-into-bullet ()
-  (let* ((x-vec (cl-transforms:x (cl-transforms:origin *cone-pose*)))
+(defun spawn-cone-into-bullet ()
+  (let* ((x-vec (+ (cl-transforms:x (cl-transforms:origin *cone-pose*)) 0.1))
          (y-vec (cl-transforms:y (cl-transforms:origin *cone-pose*)))
-         (z-vec (cl-transforms:z (cl-transforms:origin *cone-pose*)))
+         (z-vec (- (cl-transforms:z (cl-transforms:origin *cone-pose*)) 0.1))
          (x-quat (cl-transforms:x (cl-transforms:orientation *cone-pose*)))
          (y-quat (cl-transforms:y (cl-transforms:orientation *cone-pose*)))
          (z-quat (cl-transforms:z (cl-transforms:orientation *cone-pose*)))
