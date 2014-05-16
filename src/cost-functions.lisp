@@ -83,8 +83,7 @@
 ;;   ))
 
 (defun make-costmap-bbox-generator (objs &key invert padding)
-(setf hs (force-ll objs))
-(format t "objs: ~a~%" hs)
+(format t "objs: ~a~%" (force-ll objs))
   (when objs
     (let ((aabbs (loop for obj in (cut:force-ll objs)
                        collecting (btr:aabb obj))))
@@ -99,7 +98,7 @@
                    (dimensions-y/2
                      (+ (/ (cl-transforms:y (bt:bounding-box-dimensions bounding-box)) 2)
                         padding)))
-              ;; (format t "here4~%")
+
               (when (and
                      (< x (+ (cl-transforms:x bb-center) dimensions-x/2))
                      (> x (- (cl-transforms:x bb-center) dimensions-x/2))
@@ -122,3 +121,36 @@
 ;;    (list (cl-transforms:axis-angle->quaternion 
 ;;           (cl-transforms:make-3d-vector 0 y 0) 
 ;;           -0.25))))
+
+(defun make-object-visible-map
+    (world object-name robot-name camera-minimal-height camera-maximal-height size resolution)
+  (declare (type btr:bt-reasoning-world world)
+           (type symbol object-name robot-name)
+           (type number camera-maximal-height camera-minimal-height size resolution))
+ (format t "in method1 robot:~a~%" robot-name)
+  (let* ((object (btr:object world object-name))
+         (robot (btr:object world robot-name))
+         (objects-to-render (remove-if (lambda (current-object)
+                                         (or (eq object current-object)
+                                             (eq robot current-object)))
+                                       (objects world))))   
+(format t "in method2 object: ~a~% robot: ~a~% number: ~a~%" object robot objects-to-render)
+    (btr-desig::visibility-costmap
+     (btr:make-drawable-list :drawables objects-to-render)
+     (bt:pose object) camera-minimal-height camera-maximal-height
+     size resolution)))
+
+;; (defun make-location-visible-costmap
+;;     (world location robot-name camera-minimal-height camera-maximal-height size resolution)
+;;   (declare (type btr:bt-reasoning-world world)
+;;            (type location-designator location)
+;;            (type symbol robot-name)
+;;            (type number camera-maximal-height camera-minimal-height size resolution))
+;;   (let* ((robot (btr:object world robot-name))
+;;          (objects-to-render (remove robot (objects world))))
+;;     (format t "robot: ~a~% objects: ~a~%" robot objects-to-render)
+;;     (FORMAT T "(CURRENT-DESIG LOC: ~a~% loca: ~a~%" (current-desig location) location)
+;;     (btr-desig::visibility-costmap
+;;      (btr:make-drawable-list :drawables objects-to-render)
+;;      (reference (current-desig location)) camera-minimal-height camera-maximal-height
+;;      size resolution)))

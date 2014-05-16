@@ -57,7 +57,8 @@
   (setf *joint-states-subscriber*
         (roslisp:subscribe "/genius/joint_states"
                            "sensor_msgs/JointState"
-                           #'joint-states-cb)))
+                           #'joint-states-cb))
+  (init-human))
 
 (defun get-joint-value (str-name)
   (let* ((joint-states (sherpa-joint-states))
@@ -122,6 +123,7 @@
 
 (defun pointing-into-gazebo ()
  (roslisp:ros-info (sherpa-spatial-relations) "POINTING INTO GAZEBO")
+ ; (init-human)
   (execute-right-arm-trajectory (default-position-to-trajectory))
   (start-myros))
 
@@ -193,7 +195,67 @@
                      points)))))
 
 
+;;;;;;;;;;;;;;;;;;;INIT HUMAN BONES;;;;;;;;;;;;;;;;;;;
+(defparameter *bone-hash* (make-hash-table :test 'equal))
+(defparameter *bone-list* (list
+			    "pelvis_joint"
+			    "l5_joint"
+			    "l3_joint"
+			    "t12_joint"
+			    "t8_joint"
+			    "neck_joint"
+			    "head_joint"
+			    "right_upper_arm_joint"
+			    "right_lower_arm_joint"
+			    "right_hand_joint"
+			    "right_shoulder_joint"
+			    "right_upper_leg_joint"
+			    "right_lower_leg_joint"
+			    "right_foot_joint"
+			    "right_toe_joint"
+			    "left_upper_arm_joint"
+			    "left_lower_arm_joint"
+			    "left_hand_joint"
+			    "left_shoulder_joint"
+			    "left_upper_leg_joint"
+			    "left_lower_leg_joint"
+			    "left_foot_joint"
+			    "left_toe_joint"))
 
+
+(defun change-bone-state (name vector)
+  " This function is used to change the state of a single bone"
+  (let 
+      ((pub  (gethash name *bone-hash*)) 
+       (msg  (roslisp:make-msg "trajectory_msgs/JointTrajectory" 
+                                               joint_names (vector (format nil "~a_x" name) (format nil "~a_y" name) (format nil "~a_z" name))
+                                                 points (vector
+           (roslisp:make-message
+            "trajectory_msgs/JointTrajectoryPoint"
+            positions vector
+            velocities #(0 0 0)
+            time_from_start 2.0
+            )))))
+    (roslisp:publish pub msg)))
+
+(defun add-bone (name)
+	"Used to add a bone to the hash map of available bones and creates a connection to the subscribed controller"
+           (setf 
+		(gethash name *bone-hash*) 
+		(roslisp:advertise 
+			(format nil "~a_controller/command" name) 
+			"trajectory_msgs/JointTrajectory")))
+
+(defun init-human ()
+  "used to initialize the human controller for usage. creates advertisers for each joint and resets init position
+"
+    (roslisp:start-ros-node "human_teleop")
+    (dolist (b *bone-list*) 
+      (print 
+       (format t "adding bone ~a" b)) 
+      (add-bone b) 
+      (change-bone-state b #(0 0 0)))
+    (print "all bones initialized"))
 
 ;; (defun init-joint ()
 ;;  (setf *joint-states-subscriber*

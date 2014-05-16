@@ -28,13 +28,18 @@
 
 (in-package :sherpa)
 
-(defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/meshes/tree-5.stl" nil)
+(defparameter *mesh-files* '((tree1 "package://sherpa_spatial_relations/meshes/tree-1.stl" nil)
                              (tree2 "package://sherpa_spatial_relations/meshes/tree-2.stl" nil)
                              (tree3 "package://sherpa_spatial_relations/meshes/tree-3.stl" nil)
                              (tree4 "package://sherpa_spatial_relations/meshes/tree-4.stl" nil)
-			     (Tent1 "package://sherpa_spatial_relations/meshes/Tent1.stl" nil)
-			     (Tent2 "package://sherpa_spatial_relations/meshes/Tent2.stl" nil)
+                             (tanne1 "package://sherpa_spatial_relations/meshes/tanne1.stl" nil)
+                             (tanne2 "package://sherpa_spatial_relations/meshes/tanne2.stl" nil)
+                             (Tent1 "package://sherpa_spatial_relations/meshes/Tent1.stl" nil)
+                             (Tent2 "package://sherpa_spatial_relations/meshes/Tent2.stl" nil)
                              (hat "package://sherpa_spatial_relations/meshes/hat.stl" nil)
+                             (victim "package://sherpa_spatial_relations/meshes/victim.stl" nil)
+                             (mountain "package://sherpa_spatial_relations/meshes/mountain_gen.stl" nil)
+                             (plane "package://sherpa_spatial_relations/meshes/map.stl" nil)
                              (cone "package://sherpa_spatial_relations/meshes/cone.stl" nil)))
 
 
@@ -115,6 +120,27 @@
                      scale)))
  ;;ToDO change the hard-cording stuff
     (cond ((eq name `hat)
+           (make-human-specific-object world name (or types (list mesh))
+                                       (list
+                                        (make-instance 'rigid-body
+                                                       :name name :mass mass :pose (ensure-pose pose)
+                                                       :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
+                                                                                       :points (physics-utils:3d-model-vertices mesh-model)
+                                                                                       :faces (physics-utils:3d-model-faces mesh-model)
+                                                                                       :color color
+                                                                                       :disable-face-culling disable-face-culling)))))            
+         ((eq name `plane)
+           (make-human-specific-object world name (or types (list mesh))
+                                       (list
+                                        (make-instance 'rigid-body
+                                                       :name name :mass mass :pose (ensure-pose pose)
+                                                       :collision-shape (make-instance 'cl-bullet-vis:convex-hull-mesh-shape
+                                                                                       :points (physics-utils:3d-model-vertices mesh-model)
+                                                                                       :faces (physics-utils:3d-model-faces mesh-model)
+                                                                                       :color color
+                                                                                       :disable-face-culling disable-face-culling))))
+            )
+ ((eq name `victim)
            (make-human-specific-object world name (or types (list mesh))
                                        (list
                                         (make-instance 'rigid-body

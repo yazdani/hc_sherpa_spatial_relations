@@ -41,13 +41,24 @@
 (start-myros)
 (start-bullet-with-robots)
 (spawn-objects-into-world) 
-(spawn-tree-bullet)
+(spawn-tree-bullet1)
 (spawn-camps-bullet)
+(spawn-object)
 (pointing-into-gazebo)
 (pointing-into-bullet)
 (spawn-cone-into-gazebo)
 (create-costmap-with-obstacles-around 'tree-4)
 )
+
+(defun start-scene1 ()
+(start-myros)
+(start-bullet-with-robots)
+(spawn-object)
+(spawn-tree-bullet1))
+
+(defun desig ()
+(reference (make-designator 'desig-props:location `((right-of ,(get-object-pose 'tree-5))(desig-props:to desig-props:see)(desig-props:object victim)))))
+
 (defun start-myros ()
   (roslisp:ros-info (sherpa-spatial-relations) "START the ROSNODE")
   (roslisp-utilities:startup-ros :anonymous nil))
@@ -63,6 +74,7 @@
 ;; ARE SHOWING US, HOW WE CAN START THE BULLET WORLD AND SPAWN
 ;; ROBOTS AND ENVIRONMENT SPECIFIC OBJECTS INTO THIS WOLD.
 (defun start-gazebo-with-robots ()
+ (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOTS INTO GAZEBO")
   (simple-knowledge::clear-object-list)
   (simple-knowledge::add-object-to-spawn
    :name "rover"
@@ -86,7 +98,7 @@
    :file (model-path "quadrotor.urdf")))
   
 (defun start-bullet-with-robots()
-  (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOTS INTO WORLD")
+  (roslisp:ros-info (sherpa-spatial-relations) "SPAWN ROBOTS INTO BULLETWORLD")
   (setf *list* nil)
   (let* ((genius-urdf (cl-urdf:parse-urdf (roslisp:get-param "genius/robot_description")))
          (quad-urdf (cl-urdf:parse-urdf (roslisp:get-param "quad/robot_description")))
@@ -97,17 +109,24 @@
            (force-ll
             (prolog
              `(and
-               (clear-bullet-world)
+            ;   (clear-bullet-world)
                (bullet-world ?w)
-               (assert (object ?w static-plane floor ((0 0 0) (0 0 0 1))
-                               :normal (0 0 1) :constant 0))
-               (debug-window ?w)
-               (assert (object ?w urdf genius ((0 0 0) (0 0 1 1)) :urdf ,genius-urdf))
-               (assert (object ?w urdf quad ((0 1 2) (0 0 0 1)) :urdf ,quad-urdf))
-               (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
-             )))))))
+               ;; (assert (object ?w static-plane floor ((0 0 -1) (0 0 0 1))
+               ;;                 :normal (0 0 1) :constant 0 :no-robot-collision t))
+                (debug-window ?w)
+               ;; (assert (object ?w mesh mountain ((-6 18 2)(0 0 -0.5 1))
+               ;;                 :mesh mountain :mass 0.2 :color (0.6 0.6 0.6) :scale 0.1))
+           (assert (object ?w mesh plane ((0 0 0)(0 0 1 1))
+                               :mesh plane :mass 0.2 :color (0.6 0.6 0.6)))
+            (assert (object ?w urdf genius ((0 0 0) (0 0 1 1)) :urdf ,genius-urdf))
+            ;; (assert (object ?w urdf genius ((5 15 -4) (0 0 0 1)) :urdf ,genius-urdf))
+            (assert (object ?w urdf quad ((-2 3.5 3) (0 0 0 1)) :urdf ,quad-urdf))
+            ;; (assert (object ?w urdf quad ((8 15 -1) (0 0 0 1)) :urdf ,quad-urdf))
+            (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
+            )))))))
 
 (defun spawn-objects-into-world ()
+ (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREES AND BASE-CAMPS INTO GAZEBO")
   (simple-knowledge::clear-object-list)
   (simple-knowledge::add-object-to-spawn
    :name "base-camp"
@@ -159,49 +178,112 @@
           (tf:make-3d-vector 6 0 0)
           (tf:make-quaternion 0 0 0 1))
    :file (model-path "tree-4.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "hat"
+   :type 'clothes
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 7 0 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "hat.urdf"))
   (simple-knowledge:spawn-objects)
 )
 
-(defun spawn-tree-bullet ()
-(roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO WORLD")
+(defun spawn-tree-bullet1 ()
+(roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO BULLETWORLD")
 (prolog `(and (bullet-world ?w)
-                        (assert (object ?w mesh tree-1 ((9 -4 0)(0 0 0 1))
-                                        :mesh tree1 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-2 ((9 -5 0)(0 0 0 1))
-                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-3 ((6.5 1 1)(0 0 0 1))
-                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
-                                        :mesh tree4 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-5 ((5.5 1 1)(0 0 0 1))
-                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-6 ((6 1 0)(0 0 0 1))
-                                        :mesh tree3 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-7 ((6.5 2 0)(0 0 0 1))
-                                        :mesh tree2 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-8 ((5.5 3 0)(0 0 0 1))
-                                        :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-1 ((5.5 0 0)(0 0 0 1))
+                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-2 ((6 -1 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-3 ((5 2 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
+                        ;;                 :mesh tree4 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-5 ((6 0 0)(0 0 0 1))
+                                        :mesh tanne1 :mass 0.2 :color (0 0.5 0)))
+                        (assert (object ?w mesh tree-6 ((10 4 0)(0 0 0 1))
+                                        :mesh tanne1 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-7 ((10 -4 0)(0 0 0 1))
+                                        :mesh tanne1 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-8 ((15 2 0)(0 0 0 1))
+                                        :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
+                         (assert (object ?w mesh tree-9 ((13 -6 0)(0 0 0 1))
+                                        :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
+                         (assert (object ?w mesh tree-10 ((10 -8 0)(0 0 0 1))
+                                        :mesh tanne1 :mass 0.2 :color (0 0 0)))
+                        (assert (object ?w mesh tree-11 ((15 -5 0)(0 0 0 1))
+                                        :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
+                         (assert (object ?w mesh tree-12 ((4 -8 0)(0 0 0 1))
+                                        :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
+                        
+
+                        ;; (assert (object ?w mesh tree-5 ((5.5 1 1)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-6 ((6 1 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-7 ((6.5 2 0)(0 0 0 1))
+                        ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-8 ((5.5 3 0)(0 0 0 1))
+                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        )))
+
+
+(defun spawn-tree-bullet2 ()
+(roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO BULLETWORLD")
+(prolog `(and (bullet-world ?w)
+                        ;; (assert (object ?w mesh tree-1 ((5.5 0 0)(0 0 0 1))
+                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-2 ((6 -1 0)(0 0 0 1))
+                        ;; ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-3 ((5 2 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
+                        ;;                 :mesh tree4 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-5 ((8 8 0)(0 0 0 1))
+                        ;;                 :mesh tanne1 :mass 0.2 :color (0 0.5 0)))
+                        ;; (assert (object ?w mesh tree-6 ((9 7 0)(0 0 0 1))
+                        ;;                 :mesh tanne1 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-7 ((9 -2 0)(0 0 0 1))
+                        ;;                 :mesh tanne1 :mass 0.2 :color (0 0.5 0)))
+                        ;; ;; (assert (object ?w mesh tree-8 ((9 -1 0)(0 0 0 1))
+                        ;; ;;                 :mesh tanne2 :mass 0.2 :color (0 0 0))) 
+                        ;;  (assert (object ?w mesh tree-9 ((6 -4 0)(0 0 0 1))
+                        ;;                 :mesh tanne2 :mass 0.2 :color (0 0 0))) 
+                        
+
+                        ;; (assert (object ?w mesh tree-5 ((5.5 1 1)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-6 ((6 1 0)(0 0 0 1))
+                        ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-7 ((6.5 2 0)(0 0 0 1))
+                        ;;                 :mesh tree2 :mass 0.2 :color (0 0 0)))
+                        ;; (assert (object ?w mesh tree-8 ((5.5 3 0)(0 0 0 1))
+                        ;;                 :mesh tree1 :mass 0.2 :color (0 0 0)))
                         )))
 
 (defun spawn-camps-bullet ()
-(roslisp:ros-info (sherpa-spatial-relations) "SPAWN CAMPS INTO WORLD")
+(roslisp:ros-info (sherpa-spatial-relations) "SPAWN CAMPS INTO BULLETWORLD")
 (prolog `(and (bullet-world ?w)
-              (assert (object ?w mesh Tent-1 ((-7 -2 0)(0 0 0 1))
-                              :mesh Tent1 :mass 0.2 :color (0 0 0)))
+              (assert (object ?w mesh Tent-1 ((-10 -2 0)(0 0 0 1))
+                              :mesh Tent1 :mass 0.2 :color (0.6 0.6 0.6)))
               (assert (object ?w mesh Tent-2 ((7 -10 0)(0 0 1.5 1))
-                              :mesh Tent2 :mass 0.2 :color (0 0 0))))))
+                              :mesh Tent2 :mass 0.2 :color (0.6 0.6 0.6))))))
 
 (defun init-models ()
 (cram-gazebo-utilities::init-cram-gazebo-utilities))
 
 (defun spawn-cone-into-gazebo ()
   (spawn-cone-into-bullet)
+ (roslisp:ros-info (sherpa-spatial-relations) "SHOW CONE INTO GAZEBO")
+  (init-joints)
   (let* ((x-hand (get-joint-value "right_hand_joint_x"))
          (x-box-len (x-size-object 'cone-1))
         (y-box-len (/ (y-size-object 'cone-1) 2))
         (len (+ x-box-len 0.43)))
      ;   (arm-len (right-shoulder-to-right-hand-length-gazebo)))
-    (format t "hello~%")
     (simple-knowledge::clear-object-list)
     (simple-knowledge::add-object-to-spawn
      :name "cone-1"
@@ -217,6 +299,7 @@
    ; (spawn-into-bullet)))
 
 (defun spawn-cone-into-bullet ()
+ (roslisp:ros-info (sherpa-spatial-relations) "SHOW CONE INTO BULLETWORLD")
   (let* ((x-vec (+ (cl-transforms:x (cl-transforms:origin *cone-pose*)) 0.1))
          (y-vec (cl-transforms:y (cl-transforms:origin *cone-pose*)))
          (z-vec (- (cl-transforms:z (cl-transforms:origin *cone-pose*)) 0.1))
@@ -238,10 +321,11 @@
 
 (defun spawn-object ()
 "we spawn the subject of interest"
+ (roslisp:ros-info (sherpa-spatial-relations) "SPAWN SUBJECT OF INTEREST")
  (force-ll 
    (prolog `(and (bullet-world ?w)
-		 (assert (object ?w mesh hat ((7 0 0)(0 0 0 1))
-				 :mesh hat :mass 0.2 :color (1 0 0)))))))
+		 (assert (object ?w mesh victim ((9 0 0)(0 0 0 1))
+				 :mesh victim :mass 0.2 :color (1 0 0) :scale 0.6))))))
 
 
 
@@ -317,10 +401,22 @@
 ;; WHERE TO MOVE AND TO NAVIGATE. FOR THE HUMAN WE WILL
 ;; RESTRICT THE AREA OF THE COSTMAP WITH CONDITIONS.
 
+(defun starting-point ()
+  (let* ((desig (make-designator 'desig-props:location `((right-of ,(get-object-pose 'tree-5)))))
+         (trans (make-designator 'desig-props:location `((color red)
+                                                       (type hat))))
+                                                      ; (a-gesture ,(get-object-pose 'tree-5)))))
+         (loc (make-designator 'desig-props:location `((desig-props:to desig-props:see)
+                                                       (go-to ,trans)
+                                                       (type ,desig)))))
+                                                    ;   (a-gesture ,(get-object-pose 'tree-5))))))
+    (reference loc)))
+
 
 (defun create-costmap-with-obstacles-around (name)
   (let* ((transform (get-object-pose name))
-         (desig (make-designator 'desig-props:location `((go-to ,transform)))))
+         (desig (make-designator 'desig-props:location `((right-of ,transform)
+                                                         ))))
     (reference desig)))
 
 ;; (defun create-cylinder-from-genius-arm ()

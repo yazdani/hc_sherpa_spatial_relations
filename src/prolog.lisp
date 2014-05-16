@@ -37,46 +37,128 @@
 (defmethod costmap-generator-name->score ((name (eql 'on-the-bounding-box)))
   6)
 
+(defmethod costmap-generator-name->score ((name (eql 'visible)))
+  15)
+
 (defclass range-generator () ())
 (defmethod costmap-generator-name->score ((name range-generator)) 2)
 
 (defclass gaussian-generator () ())
 (defmethod costmap-generator-name->score ((name gaussian-generator)) 6)
 
-(def-fact-group robot-metadata (end-effector-link robot)
+(def-fact-group robot-quad-metadata (robot camera-frame camera-minimal-height camera-maximal-height)
+  (<- (robot quad))
+  (<- (camera-frame quad "camera_rgb_optical_frame")) 
+  (<- (camera-frame quad "camera_depth_optical_frame"))
+  (<- (camera-minimal-height 0.6))
+  (<- (camera-maximal-height 1.0))
+  )
 
-  (<- (robot genius)))
+(def-fact-group robot-human-metadata (robot cam-frame)
+  (<- (robot human))
+  (<- (cam-frame human "camera_rgb_frame")) 
+  (<- (cam-frame human "camera_depth_frame"))
+  )
+
 
 (def-fact-group spatial-relations-costmap (desig-costmap)
-  
-  (<- (desig-costmap ?designator ?costmap)
-    (desig-prop ?designator (go-to ?position))
-    (costmap ?costmap)
-    (costmap-add-function sherpa-spatial-generator
-                          (make-spatial-relation-cost-function ?position :Y  < 0.0)
-                          ?costmap)
-    (costmap-add-height-generator (make-constant-height-function
-                                   3.0) 
-                                  ?costmap)
-    (instance-of range-generator ?range-generator-id-1)
-    (costmap-add-function ?range-generator-id-1
-                          (make-range-cost-function ?position 2.5)
-                         ?costmap)
-    (instance-of gaussian-generator ?gaussian-generator-id)
-    (costmap-add-function ?gaussian-generator-id
-                          (make-location-cost-function ?position 1.0)
-                          ?costmap)
+  (<- (desig-costmap ?desig ?costmap)
+    (bullet-world ?world)
+    (format "in visibility3~%")
     (findall ?obj (and
                    (bullet-world ?world)
                    (object ?world ?name)
                    (%object ?world ?name ?obj)
                    (lisp-type ?obj environment-object)
                    (get-slot-value ?obj types ?types)
-                   (member ?type ?types)) ?objs)   
+                   (member ?type ?types)) ?objs)
+    (format "?objs: ~a~%" ?objs)
+    (costmap ?costmap)
     (costmap-add-function
      collisions
-     (make-costmap-bbox-generator ?objs :invert t :padding -0.3)
-     ?costmap)))
+     (make-costmap-bbox-generator ?objs :invert t :padding -0.1)
+     ?costmap)
+    (desig-prop ?desig (right-of ?pos-tree))
+    (format "?objs: ~%")
+    ;; (robot quad
+    (costmap ?costmap)
+ (format "?oAAAbjs: ~%")
+    (costmap-add-function sherpa-spatial-generator
+                          (make-spatial-relation-cost-function ?pos-tree :Y  < 0.0)
+                          ?costmap)
+
+ ;; (costmap-add-height-generator (make-constant-height-function
+ ;;                                   3.0) 
+ ;;                                  ?costmap)
+)
+)    
+
+
+
+
+ ;;    (desig-prop ?desig (type ?gesture))
+ ;;    (desig-prop ?gesture (right-of ?pos))
+ ;;    (costmap-add-function sherpa-spatial-generator
+ ;;                          (make-spatial-relation-cost-function ?pos :Y  < 0.0)
+ ;;                          ?costmap)
+ ;;    (instance-of range-generator ?range-generator-id-1)
+ ;;    (costmap-add-function ?range-generator-id-1
+ ;;                          (make-range-cost-function ?pos 2.5)
+ ;;                          ?costmap)
+ ;;    (instance-of gaussian-generator ?gaussian-generator-id)
+ ;;    (costmap-add-function ?gaussian-generator-id
+ ;;                          (make-location-cost-function ?pos 1.0)
+ ;;                          ?costmap)
+ ;;    (costmap ?costmap)
+ ;;    (object-visible-costmap ?desig ?costmap))
+    
+ ;;  (<- (object-visible-costmap ?desig ?costmap)
+ ;;    ;; (costmap ?costmap)
+ ;;    (format "in visibility1~%")
+ ;;    (bullet-world ?world)
+ ;;    (format "in visibility2~%")
+ ;;    (desig-prop ?desig (go-to ?loc-desig))
+ ;;    (desig-prop ?desig (type ?loc-desig1))
+ ;;    (desig-prop ?desig (a-gesture ?pos))
+ ;;                                        ; (object-type ?world ?name ?type-in-bullet)
+ ;;    (robot quad)
+ ;;    ;; (costmap ?costmap)
+ ;;    ;; (costmap-add-height-generator (make-constant-height-function
+ ;;    ;;                                3.0) 
+ ;;    ;;                               ?costmap)
+ ;;    (costmap ?costmap)
+ ;;    ;; (btr-desig::visibility-costmap-metadata
+ ;;    ;;  1.0 1.6 0.02 4.0)
+ ;;    (format "haaaalooo~%")
+ ;;    (costmap-add-function
+ ;;     visible
+ ;;     (bullet-reasoning-designators::make-object-visibility-costmap
+ ;;      ?world victim quad 0.6 1.0 10.0 0.02)
+ ;;     ?costmap)))
+ ;;  ;;   (instance-of gaussian-generator ?gaussian-generator-id)
+ ;; ;; (format "in visibility3~%")
+ ;; ;;    (costmap-add-function ?gaussian-generator-id
+ ;; ;;                          (make-location-cost-function ?position 1.0)
+ ;; ;;                             ?costmap)
+ ;;    ;; (costmap-add-height-generator (make-constant-height-function
+ ;;    ;;                                3.0) 
+ ;;    ;;                               ?costmap)
+
+ ;; (<- (location-visible-costmap ?desig ?costmap)
+ ;;   (desig-prop ?desig (go-to ?position))
+ ;;   (bullet-world ?world)
+ ;;   (robot quad) 
+ ;;   (costmap ?costmap)
+ ;;   (format "in visibility2~%")
+ ;;   (btr-desig::visibility-costmap-metadata
+ ;;    1.0 1.6 0.02 3.0)
+ ;;   (format "in visibility3~%")
+ ;;   (costmap-add-function
+ ;;    visible
+ ;;     (make-location-visibility-costmap
+ ;;      ?world ?desig quad 1.0 1.6 3.0 0.02)
+ ;;     ?costmap)))
+
 
     ;; (collision-costmap-inverter ?designator 0.0 ?costmap))
 

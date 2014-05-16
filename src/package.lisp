@@ -41,6 +41,6 @@
         #:btr)
   (:shadowing-import-from #:btr object household-object pose object-pose width height robot)
   (:import-from #:cram-reasoning #:<- #:def-fact-group)
-  (:import-from #:cram-pr2-knowledge pr2)
+  ;; (:import-from #:cram-pr2-knowledge pr2)
   (:export hat tree)
-  (:desig-properties #:go-to #:far-from #:close-to #:sourrounded-by #:right-of #:left-of #:type #:behind #:in-front #:for-robot #:name))
+  (:desig-properties #:go-to #:far-from #:close-to #:sourrounded-by #:right-of #:left-of #:type #:behind #:in-front #:for-robot #:name #:color #:a-gesture))
