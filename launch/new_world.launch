@@ -1,8 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <launch>
+<param name="robot_description" textfile="$(find sherpa_spatial_relations)/urdf/mountain.urdf"/>
 
- <include file="$(find gazebo_ros)/launch/empty_world.launch" >
-            <arg name="world_name" value="$(find sherpa_spatial_relations)/worlds/sherpa.world"/>
-            <arg name="gui" value="false"/>
-        </include>
+<!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
+   <arg name="world_name" value="$(find sherpa_spatial_relations)/worlds/sherpa.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>-->
 
+
+  <arg name="name" default="mountain_map"/>
+ <node name="spawn_world" pkg="gazebo_ros" type="spawn_model"
+     args="-param robot_description
+           -urdf
+	   -x 13 -y 16 -z 0 -R 0 -P 0  -Y -2
+	   -model $(arg name)"
+     respawn="false" output="screen"/>
+     
 </launch>

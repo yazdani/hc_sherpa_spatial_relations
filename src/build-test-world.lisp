@@ -109,7 +109,7 @@
            (force-ll
             (prolog
              `(and
-            ;   (clear-bullet-world)
+              (clear-bullet-world)
                (bullet-world ?w)
                ;; (assert (object ?w static-plane floor ((0 0 -1) (0 0 0 1))
                ;;                 :normal (0 0 1) :constant 0 :no-robot-collision t))
@@ -118,14 +118,16 @@
                ;;                 :mesh mountain :mass 0.2 :color (0.6 0.6 0.6) :scale 0.1))
            (assert (object ?w mesh plane ((0 0 0)(0 0 1 1))
                                :mesh plane :mass 0.2 :color (0.6 0.6 0.6)))
+               (assert (object ?w mesh mountain ((-3 18 2)(0 0 -0.5 1))
+                               :mesh mountain :mass 0.2 :color (0.6 0.6 0.6) :scale 0.1))
             (assert (object ?w urdf genius ((0 0 0) (0 0 1 1)) :urdf ,genius-urdf))
             ;; (assert (object ?w urdf genius ((5 15 -4) (0 0 0 1)) :urdf ,genius-urdf))
             (assert (object ?w urdf quad ((-2 3.5 3) (0 0 0 1)) :urdf ,quad-urdf))
             ;; (assert (object ?w urdf quad ((8 15 -1) (0 0 0 1)) :urdf ,quad-urdf))
-            (assert (object ?w urdf rover ((2 3 0) (0 0 0 1)) :urdf ,rover-urdf))
+            (assert (object ?w urdf rover ((1 3 0) (0 0 0 1)) :urdf ,rover-urdf))
             )))))))
 
-(defun spawn-objects-into-world ()
+(defun spawn-objects-into-world1 ()
  (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREES AND BASE-CAMPS INTO GAZEBO")
   (simple-knowledge::clear-object-list)
   (simple-knowledge::add-object-to-spawn
@@ -191,6 +193,112 @@
   (simple-knowledge:spawn-objects)
 )
 
+(defun spawn-objects-into-world2 ()
+ (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREES INTO GAZEBO")
+  (simple-knowledge::add-object-to-spawn
+   :name "tree-5"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 6 1 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne1.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "tree-6"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 10 4 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne12.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "tree-7"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 10 -4 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne12.urdf"))
+ (simple-knowledge::add-object-to-spawn
+   :name "tree-8"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 15 2 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne2.urdf"))
+ (simple-knowledge::add-object-to-spawn
+   :name "tree-9"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 13 -6 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne21.urdf"))
+ (simple-knowledge::add-object-to-spawn
+   :name "tree-10"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 10 -8 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne12.urdf"))
+ (simple-knowledge::add-object-to-spawn
+   :name "tree-12"
+   :type 'tree
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 4 -8 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "tanne1.urdf"))
+ (simple-knowledge::add-object-to-spawn
+   :name "victim"
+   :type 'clothes
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 9 0 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "victim.urdf"))
+
+ (simple-knowledge::add-object-to-spawn
+   :name "sherpa_rover"
+   :type 'robot
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector 1 3 0)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "sherpa_rover.urdf"))
+  (simple-knowledge::add-object-to-spawn
+   :name "sherpa_quad"
+   :type 'robot
+   :collision-parts nil
+   :pose (tf:make-pose-stamped
+          "/map"
+          0.0
+          (tf:make-3d-vector  -2 3.5 3)
+          (tf:make-quaternion 0 0 0 1))
+   :file (model-path "quadrotor.urdf"))
+  (simple-knowledge:spawn-objects)
+)
+
 (defun spawn-tree-bullet1 ()
 (roslisp:ros-info (sherpa-spatial-relations) "SPAWN TREE INTO BULLETWORLD")
 (prolog `(and (bullet-world ?w)
@@ -202,7 +310,7 @@
                         ;;                 :mesh tree3 :mass 0.2 :color (0 0 0)))
                         ;; (assert (object ?w mesh tree-4 ((6 0 0)(0 0 0 1))
                         ;;                 :mesh tree4 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-5 ((6 0 0)(0 0 0 1))
+                        (assert (object ?w mesh tree-5 ((6 1 0)(0 0 0 1))
                                         :mesh tanne1 :mass 0.2 :color (0 0.5 0)))
                         (assert (object ?w mesh tree-6 ((10 4 0)(0 0 0 1))
                                         :mesh tanne1 :mass 0.2 :color (0 0 0)))
@@ -214,10 +322,10 @@
                                         :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
                          (assert (object ?w mesh tree-10 ((10 -8 0)(0 0 0 1))
                                         :mesh tanne1 :mass 0.2 :color (0 0 0)))
-                        (assert (object ?w mesh tree-11 ((15 -5 0)(0 0 0 1))
-                                        :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
+                        ;; (assert (object ?w mesh tree-11 ((4 4 0)(0 0 0 1))
+                        ;;                 :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
                          (assert (object ?w mesh tree-12 ((4 -8 0)(0 0 0 1))
-                                        :mesh tanne2 :mass 0.2 :color (0 0.5 0))) 
+                                        :mesh tanne1 :mass 0.2 :color (0 0.5 0))) 
                         
 
                         ;; (assert (object ?w mesh tree-5 ((5.5 1 1)(0 0 0 1))
@@ -384,7 +492,23 @@
                                    ((,vec-x ,vec-y ,vec-z)(,quat-x ,quat-y ,quat-z ,quat-w))))))
            (format t "here2~%")))))
 
-        
+      
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROJECTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(cpl-impl:def-cram-function find-object (object-type obstacle-name)
+  "Returns an object desig."
+  (cram-language-designator-support:with-designators
+      ((close-to (desig-props:location `((goTo "Tree")
+                                         (desig-props:name ,obstacle-name))))
+       (the-object (desig-props:object `((desig-props:type ,object-type)
+                                         (desig-props:at ,close-to)))))
+    (reference close-to)
+    (format t "trying to perceive the object ~a~%" the-object)
+    (plan-lib:perceive-object 'cram-plan-library:a the-object)))
+                                          
+
+
+  
 ;; AT THIS PART OF THIS PROGRAMM WE WILL NOW WORKING WITH COMMAND AND INSTRUCTIONS IN FORM OF
 ;; HUMAN GESTURES.
 

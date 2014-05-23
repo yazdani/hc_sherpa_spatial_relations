@@ -34,7 +34,7 @@
   :depends-on (cram-language
                location-costmap
                roslisp
-               cram-pr2-knowledge
+               ;; cram-pr2-knowledge
                pr2-manipulation-knowledge
                simple-knowledge
                ;; cram-gazebo-utilities

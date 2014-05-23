@@ -9,6 +9,7 @@
 /home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/gtest/CMakeFiles/gtest.dir
 /home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/gtest/CMakeFiles/gtest_main.dir
 /home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/CMakeFiles/pcl_publisher.dir
+/home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/CMakeFiles/quadcopter_list.dir
 /home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/CMakeFiles/rosbuild_clean-test-results.dir
 /home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/CMakeFiles/rosbuild_precompile.dir
 /home/yazdani/work/ros/hydro/rosbuild_ws/workspace/sherpa_spatial_relations/build/CMakeFiles/rosbuild_premsgsrvgen.dir

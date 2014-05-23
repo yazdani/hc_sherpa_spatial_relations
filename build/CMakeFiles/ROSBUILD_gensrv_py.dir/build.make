@@ -159,7 +159,6 @@ CMakeFiles/ROSBUILD_gensrv_py: ../src/sherpa_spatial_relations/srv/__init__.py
 ../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /opt/ros/hydro/share/rosbag_migration_rule/package.xml
 ../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /opt/ros/hydro/share/trajectory_msgs/package.xml
 ../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /opt/ros/hydro/share/control_msgs/package.xml
-../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /home/yazdani/work/ros/hydro/rosbuild_ws/cram_physics/cram_pr2_knowledge/manifest.xml
 ../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /home/yazdani/work/ros/hydro/rosbuild_ws/cram_gazebo/cram_gazebo_utilities/manifest.xml
 ../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /home/yazdani/work/ros/hydro/rosbuild_ws/cram_gazebo/simple_knowledge/manifest.xml
 ../src/sherpa_spatial_relations/srv/_ReturnJointStates.py: /opt/ros/hydro/share/gazebo_msgs/package.xml

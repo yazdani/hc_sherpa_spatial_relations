@@ -254,6 +254,19 @@ pcl_publisher/fast:
 .PHONY : pcl_publisher/fast
 
 #=============================================================================
+# Target rules for targets named quadcopter_list
+
+# Build rule for target.
+quadcopter_list: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 quadcopter_list
+.PHONY : quadcopter_list
+
+# fast build rule for target.
+quadcopter_list/fast:
+	$(MAKE) -f CMakeFiles/quadcopter_list.dir/build.make CMakeFiles/quadcopter_list.dir/build
+.PHONY : quadcopter_list/fast
+
+#=============================================================================
 # Target rules for targets named rosbuild_clean-test-results
 
 # Build rule for target.
@@ -472,6 +485,30 @@ src/pcl_publisher.cpp.s:
 	$(MAKE) -f CMakeFiles/pcl_publisher.dir/build.make CMakeFiles/pcl_publisher.dir/src/pcl_publisher.cpp.s
 .PHONY : src/pcl_publisher.cpp.s
 
+src/quadcopter_list.o: src/quadcopter_list.cpp.o
+.PHONY : src/quadcopter_list.o
+
+# target to build an object file
+src/quadcopter_list.cpp.o:
+	$(MAKE) -f CMakeFiles/quadcopter_list.dir/build.make CMakeFiles/quadcopter_list.dir/src/quadcopter_list.cpp.o
+.PHONY : src/quadcopter_list.cpp.o
+
+src/quadcopter_list.i: src/quadcopter_list.cpp.i
+.PHONY : src/quadcopter_list.i
+
+# target to preprocess a source file
+src/quadcopter_list.cpp.i:
+	$(MAKE) -f CMakeFiles/quadcopter_list.dir/build.make CMakeFiles/quadcopter_list.dir/src/quadcopter_list.cpp.i
+.PHONY : src/quadcopter_list.cpp.i
+
+src/quadcopter_list.s: src/quadcopter_list.cpp.s
+.PHONY : src/quadcopter_list.s
+
+# target to generate assembly for a file
+src/quadcopter_list.cpp.s:
+	$(MAKE) -f CMakeFiles/quadcopter_list.dir/build.make CMakeFiles/quadcopter_list.dir/src/quadcopter_list.cpp.s
+.PHONY : src/quadcopter_list.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -492,6 +529,7 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... pcl_publisher"
+	@echo "... quadcopter_list"
 	@echo "... rebuild_cache"
 	@echo "... rosbuild_clean-test-results"
 	@echo "... rosbuild_precompile"
@@ -511,6 +549,9 @@ help:
 	@echo "... src/pcl_publisher.o"
 	@echo "... src/pcl_publisher.i"
 	@echo "... src/pcl_publisher.s"
+	@echo "... src/quadcopter_list.o"
+	@echo "... src/quadcopter_list.i"
+	@echo "... src/quadcopter_list.s"
 .PHONY : help
 
 

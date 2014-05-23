@@ -11,7 +11,7 @@
    
      <collision>
        <geometry>
-	 <mesh filename="package://sherpa_spatial_relations/models/tree-1.stl"/>
+	 <mesh filename="package://sherpa_spatial_relations/meshes/tree-1.stl"/>
        </geometry>
      </collision>
 

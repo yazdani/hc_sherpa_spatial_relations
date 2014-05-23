@@ -65,24 +65,24 @@
   (<- (desig-costmap ?desig ?costmap)
     (bullet-world ?world)
     (format "in visibility3~%")
-    (findall ?obj (and
-                   (bullet-world ?world)
-                   (object ?world ?name)
-                   (%object ?world ?name ?obj)
-                   (lisp-type ?obj environment-object)
-                   (get-slot-value ?obj types ?types)
-                   (member ?type ?types)) ?objs)
-    (format "?objs: ~a~%" ?objs)
-    (costmap ?costmap)
-    (costmap-add-function
-     collisions
-     (make-costmap-bbox-generator ?objs :invert t :padding -0.1)
-     ?costmap)
+    ;; (findall ?obj (and
+    ;;                (bullet-world ?world)
+    ;;                (object ?world ?name)
+    ;;                (%object ?world ?name ?obj)
+    ;;                (lisp-type ?obj environment-object)
+    ;;                (get-slot-value ?obj types ?types)
+    ;;                (member ?type ?types)) ?objs)
+    ;; (format "?objs: ~a~%" ?objs)
+    ;; (costmap ?costmap)
+    ;; (costmap-add-function
+    ;;  collisions
+    ;;  (make-costmap-bbox-generator ?objs :invert t :padding -0.2)
+    ;;  ?costmap)
     (desig-prop ?desig (right-of ?pos-tree))
     (format "?objs: ~%")
     ;; (robot quad
     (costmap ?costmap)
- (format "?oAAAbjs: ~%")
+    (format "?oAAAbjs: ~%")
     (costmap-add-function sherpa-spatial-generator
                           (make-spatial-relation-cost-function ?pos-tree :Y  < 0.0)
                           ?costmap)
@@ -90,6 +90,7 @@
  ;; (costmap-add-height-generator (make-constant-height-function
  ;;                                   3.0) 
  ;;                                  ?costmap)
+    (format "ha~%")
 )
 )    
 

@@ -1,3 +1,4 @@
+
 <?xml version="1.0" ?>
 <robot name="sherpa_rover">
 <material name="Blue">
@@ -108,7 +109,7 @@
       <geometry>
         <mesh filename="package://sherpa_rover_description/meshes/Arm_Part_1.dae"/>
       </geometry>
-  <material name="LightGrey"/>
+<material name="LightGrey"/>
     </visual>
     <collision>
       <geometry>
@@ -129,7 +130,7 @@
       <geometry>
         <mesh filename="package://sherpa_rover_description/meshes/Arm_Part_2.dae"/>
       </geometry>
-  <material name="LightGrey"/>
+<material name="LightGrey"/>
     </visual>
     <collision>
       <geometry>
@@ -150,7 +151,7 @@
       <geometry>
         <mesh filename="package://sherpa_rover_description/meshes/Arm_Gripper.dae"/>
       </geometry>
-  <material name="Black"/>
+<material name="Black"/>
     </visual>
     <collision>
       <geometry>
@@ -209,10 +210,9 @@
       <geometry>
         <mesh filename="package://sherpa_rover_description/meshes/Loose_Wheel.dae"/>
       </geometry>
-  <material name="Black"/>
+ <material name="Black"/>
     <origin xyz="0.0 0.0 0.0" rpy="3.1415939331054688 0.0 0.0 " />
     </visual>
-
     <collision>
       <geometry>
         <mesh filename="package://sherpa_rover_description/meshes/Loose_Wheel_Col.dae"/>
@@ -234,7 +234,7 @@
       <geometry>
         <mesh filename="package://sherpa_rover_description/meshes/Loose_Wheel.dae"/>
       </geometry>
- <material name="Black"/>
+<material name="Black"/>
     </visual>
     <collision>
       <geometry>

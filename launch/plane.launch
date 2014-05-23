@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+
+<param name="plane_description" textfile="$(find sherpa_spatial_relations)/urdf/plane.urdf"/>
+ <arg name="name" default="mountain_plane"/>
+ <node name="spawn_world" pkg="gazebo_ros" type="spawn_model"
+     args="-param plane_description
+           -urdf
+	   -x 0 -y 0 -z 0.08 -R 0 -P 0 -Y 0
+	   -model $(arg name)"
+     respawn="false" output="screen"/>
+     
+</launch>

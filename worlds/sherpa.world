@@ -8,31 +8,15 @@
       <uri>model://sun</uri>
     </include>
     <model name="alpine_mesh">
-      <pose>0 0 0  0 0 0</pose>
+      <pose>-3 18 2  0 0 -0.5 </pose>
       <static>true</static>
       <link name="body">
 	<visual name="visual">
 	  <geometry>
-	    <mesh><uri>file://alp_textured_scaled.dae</uri></mesh>
+	    <mesh><uri>file://mountain_gen.dae</uri></mesh>
 	  </geometry>
 	</visual>
       </link>
     </model>
   </world>
 </sdf>
-<!--        <uri>model://gas_station</uri> -->
-<!--       <name>gas_station</name> -->
-<!--       <pose>-2.0 7.0 0 0 0 0</pose> -->
-<!--     </include-\-> -->
-<!--     <include> -->
-<!--       <uri>model://sherpa_map_description</uri> -->
-<!--     </include> -->
-<!--  -->
-<!--     <include> -->
-<!--       <uri>model://sherpa_avalange_description</uri> -->
-<!--       <pose>-27.6 -278.76 -10 0 0 -1.56</pose> -->
-<!--     </include> -->
-<!-- -\-> -->
-<!--   </world> -->
-<!-- </sdf> -->
-

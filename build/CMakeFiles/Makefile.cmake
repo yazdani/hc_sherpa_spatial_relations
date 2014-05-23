@@ -144,6 +144,7 @@ SET(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/clean_test_results.dir/DependInfo.cmake"
   "CMakeFiles/doxygen.dir/DependInfo.cmake"
   "CMakeFiles/pcl_publisher.dir/DependInfo.cmake"
+  "CMakeFiles/quadcopter_list.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_clean-test-results.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_precompile.dir/DependInfo.cmake"
   "CMakeFiles/rosbuild_premsgsrvgen.dir/DependInfo.cmake"
