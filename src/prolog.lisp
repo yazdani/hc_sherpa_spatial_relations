@@ -92,7 +92,7 @@
  ;;                                  ?costmap)
     (format "ha~%")
 )
-)    
+
 
 
 
@@ -178,15 +178,25 @@
     ;;                ?objs)
   
   
-  ;; (<- (environment-object-type ?world ?object-name ?object-type)
-  ;;   (bullet-world ?world)
-  ;;   (object ?world ?name)
-  ;;   (%object ?world ?name ?object-instance)
-  ;;   (lisp-type ?object-instance environment-object)
-  ;;   (get-slot-value ?object-instance types ?types)
-  ;;   (member ?type ?types)
-  ;;   )
+  (<- (environment-object-type ?world ?name ?type)
+    (bullet-world ?world)
+    (object ?world ?name)
+    (%object ?world ?name ?object-instance)
+    (lisp-type ?object-instance environment-object)
+    (get-slot-value ?object-instance types ?types)
+    (member ?type ?types)
+    )
 
+ (<- (human-specific-object-type ?world ?name ?type)
+    (bullet-world ?world)
+    (object ?world ?name)
+    (%object ?world ?name ?object-instance)
+    (lisp-type ?object-instance human-specific-object)
+    (get-slot-value ?object-instance types ?types)
+    (member ?type ?types)
+    )
+
+)
   ;; (debug-costmap ?costmap 0.5)
     ;; (debug-costmap ?costmap 0.4)
     ;; (costmap-add-orientation-generator (make-orientation-function 

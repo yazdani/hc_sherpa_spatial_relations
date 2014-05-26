@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <launch>
 
-<include file="$(find sherpa_spatial_relations)/launch/sherpa_map.launch">
-   <arg name="world" value="$(find sherpa_spatial_relations)/worlds/sherpa.world"/> 
-  </include>
+<!-- <include file="$(find sherpa_spatial_relations)/launch/sherpa_map.launch"> -->
+<!--    <arg name="world" value="$(find sherpa_spatial_relations)/worlds/sherpa.world"/>  -->
+<!--   </include> -->
 <!-- <include file="$(find bullet_reasoning_demo)/launch/bullet_reasoning.launch"/> -->
 
 
 
-<!-- <include file="$(find gazebo_ros)/launch/empty_world.launch"/> -->
+<include file="$(find gazebo_ros)/launch/empty_world.launch"/>
 <!-- <ground ns="map"> -->
 <!--  <include file="$(find sherpa_spatial_relations)/launch/new_world.launch"/> -->
 <!-- </ground>  -->
@@ -24,30 +24,30 @@
   <!-- start empty world -->
   <!-- <node name="alpine_mesh" pkg="gazebo_ros" type="spawn_model" args="$(find sherpa_spatial_relations)/worlds/sherpa.world" respawn="false" output="screen"/> -->
 
-<!-- <group ns="quad"> -->
-<!-- <include file="$(find sherpa_spatial_relations)/launch/flying_robot.launch"/> -->
-<!-- </group> -->
+<group ns="quad">
+<include file="$(find sherpa_spatial_relations)/launch/flying_robot.launch"/>
+</group>
 
-<!-- <group ns="rover"> -->
-<!-- <include file="$(find sherpa_spatial_relations)/launch/ground_rover.launch"/> -->
-<!-- </group> -->
+<group ns="rover">
+<include file="$(find sherpa_spatial_relations)/launch/ground_rover.launch"/>
+</group>
 
-<!-- <group ns="genius"> -->
-<!-- <include file="$(find sherpa_spatial_relations)/launch/busy_genius.launch"/> -->
-<!--  <node type="laser_scan_assembler" pkg="laser_assembler" -->
-<!--         name="my_assembler"> -->
-<!--     <remap from="scan" to="handscan"/> -->
-<!--     <param name="max_scans" type="int" value="400" /> -->
-<!--     <param name="fixed_frame" type="string" value="laser_link" /> -->
-<!--   </node> -->
+<group ns="genius">
+<include file="$(find sherpa_spatial_relations)/launch/busy_genius.launch"/>
+ <node type="laser_scan_assembler" pkg="laser_assembler"
+        name="my_assembler">
+    <remap from="scan" to="handscan"/>
+    <param name="max_scans" type="int" value="400" />
+    <param name="fixed_frame" type="string" value="laser_link" />
+  </node>
     
-<!--     <node name="periodic_snapshoter" pkg="sherpa_utils"  type="periodic_snapshoter" respawn="false" output="screen" /> -->
-<!-- </group> -->
+    <node name="periodic_snapshoter" pkg="sherpa_utils"  type="periodic_snapshoter" respawn="false" output="screen" />
+</group>
 
-<!-- <group ns="map"> -->
-<!-- <include file="$(find sherpa_spatial_relations)/launch/map.launch"/> -->
-<!-- </group> -->
-<!-- <param name="cone_description" textfile="$(find sherpa_spatial_relations)/urdf/cone.urdf"/>  -->
-<!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param cone_description -urdf -model cone" /> -->
+<group ns="map">
+<include file="$(find sherpa_spatial_relations)/launch/map.launch"/>
+</group>
+<param name="cone_description" textfile="$(find sherpa_spatial_relations)/urdf/cone.urdf"/>
+<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param cone_description -urdf -model cone" />
 
 </launch>

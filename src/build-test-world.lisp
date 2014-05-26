@@ -111,15 +111,15 @@
              `(and
               (clear-bullet-world)
                (bullet-world ?w)
-               ;; (assert (object ?w static-plane floor ((0 0 -1) (0 0 0 1))
-               ;;                 :normal (0 0 1) :constant 0 :no-robot-collision t))
+               (assert (object ?w static-plane floor ((0 0 -1) (0 0 0 1))
+                               :normal (0 0 1) :constant 0 :no-robot-collision t))
                 (debug-window ?w)
                ;; (assert (object ?w mesh mountain ((-6 18 2)(0 0 -0.5 1))
                ;;                 :mesh mountain :mass 0.2 :color (0.6 0.6 0.6) :scale 0.1))
-           (assert (object ?w mesh plane ((0 0 0)(0 0 1 1))
-                               :mesh plane :mass 0.2 :color (0.6 0.6 0.6)))
-               (assert (object ?w mesh mountain ((-3 18 2)(0 0 -0.5 1))
-                               :mesh mountain :mass 0.2 :color (0.6 0.6 0.6) :scale 0.1))
+           ;; (assert (object ?w mesh plane ((0 0 0)(0 0 1 1))
+           ;;                     :mesh plane :mass 0.2 :color (0.6 0.6 0.6)))
+               ;; (assert (object ?w mesh mountain ((-3 18 2)(0 0 -0.5 1))
+               ;;                 :mesh mountain :mass 0.2 :color (0.6 0.6 0.6) :scale 0.1))
             (assert (object ?w urdf genius ((0 0 0) (0 0 1 1)) :urdf ,genius-urdf))
             ;; (assert (object ?w urdf genius ((5 15 -4) (0 0 0 1)) :urdf ,genius-urdf))
             (assert (object ?w urdf quad ((-2 3.5 3) (0 0 0 1)) :urdf ,quad-urdf))
@@ -495,20 +495,23 @@
       
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; PROJECTION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(cpl-impl:def-cram-function find-object (object-type obstacle-name)
-  "Returns an object desig."
-  (cram-language-designator-support:with-designators
-      ((close-to (desig-props:location `((goTo "Tree")
-                                         (desig-props:name ,obstacle-name))))
-       (the-object (desig-props:object `((desig-props:type ,object-type)
-                                         (desig-props:at ,close-to)))))
-    (reference close-to)
-    (format t "trying to perceive the object ~a~%" the-object)
-    (plan-lib:perceive-object 'cram-plan-library:a the-object)))
+;; (cpl-impl:def-cram-function find-objection (obstacle-name)
+;;   "Returns an object desig."
+;;   (format t "hello~%")
+;;  (cram-projection:with-projection-environment
+;;      projection-pocess-modules::pr2-bullet-projection-environment
+
+;;   (cram-language-designator-support:with-designators
+;;       ((desig  (desig-props:location `((right-of ,(get-object-pose obstacle-name)))))
+;;        (close-to (desig-props:location `((color red)
+;;                                          (type hat))))
+;;        (the-object (desig-props:object `((desig-props:to desig-props:see)
+;;                                          (go-to ,close-to)
+;;                                          (type ,desig)))))
+;;     (reference close-to)
+;;     (format t "trying to perceive the object ~a~%" the-object)
+;;     (plan-lib:perceive-object 'cram-plan-library:a the-object)))
                                           
-
-
-  
 ;; AT THIS PART OF THIS PROGRAMM WE WILL NOW WORKING WITH COMMAND AND INSTRUCTIONS IN FORM OF
 ;; HUMAN GESTURES.
 
